@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  appendQueuedPlayerIds,
   answersToLeafIndex,
   childNodeIndex,
   createGenreSchedule,
@@ -11,12 +12,18 @@ import {
   validateQuestionBank
 } from "../game-logic.js";
 
-test("Noを左、Yesを右として木をたどる", () => {
-  assert.equal(childNodeIndex(0, false), 1);
-  assert.equal(childNodeIndex(0, true), 2);
-  assert.deepEqual(getPathNodeIndices([false, true, false, true]), [0, 1, 4, 9]);
-  assert.equal(answersToLeafIndex([false, true, false, true]), 5);
-  assert.equal(answersToLeafIndex([true, true, true, true]), 15);
+test("Yesを左、Noを右として木をたどる", () => {
+  assert.equal(childNodeIndex(0, true), 1);
+  assert.equal(childNodeIndex(0, false), 2);
+  assert.deepEqual(getPathNodeIndices([true, false, true, false]), [0, 1, 4, 9]);
+  assert.equal(answersToLeafIndex([true, false, true, false]), 5);
+  assert.equal(answersToLeafIndex([true, true, true, true]), 0);
+  assert.equal(answersToLeafIndex([false, false, false, false]), 15);
+});
+
+test("途中参加者を重複なく代表者キューの末尾へ追加する", () => {
+  assert.deepEqual(appendQueuedPlayerIds(["a", "b"], ["a", "c", "d"]), ["a", "b", "c", "d"]);
+  assert.deepEqual(appendQueuedPlayerIds(["a", "b"], ["c", "d"], 3), ["a", "b", "c"]);
 });
 
 test("幅優先インデックスから深さを算出する", () => {

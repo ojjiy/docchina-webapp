@@ -19,14 +19,14 @@ export function nodeDepth(index) {
 }
 
 export function childNodeIndex(parentIndex, answer) {
-  return parentIndex * 2 + (answer ? 2 : 1);
+  return parentIndex * 2 + (answer ? 1 : 2);
 }
 
 export function answersToLeafIndex(answers) {
   if (!Array.isArray(answers) || answers.length !== TREE_DEPTH) {
     throw new Error(`${TREE_DEPTH}個の回答が必要です。`);
   }
-  return answers.reduce((leaf, answer) => leaf * 2 + (answer ? 1 : 0), 0);
+  return answers.reduce((leaf, answer) => leaf * 2 + (answer ? 0 : 1), 0);
 }
 
 export function getPathNodeIndices(answers) {
@@ -128,4 +128,13 @@ export function scorePredictions(predictions, reachedLeaf) {
   return Object.entries(predictions || {})
     .filter(([, leaf]) => leaf === reachedLeaf)
     .map(([playerId]) => playerId);
+}
+
+export function appendQueuedPlayerIds(gamePlayerIds, playerIds, maximum = MAX_PLAYERS) {
+  const result = [...gamePlayerIds];
+  for (const playerId of playerIds) {
+    if (result.length >= maximum) break;
+    if (!result.includes(playerId)) result.push(playerId);
+  }
+  return result;
 }

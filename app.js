@@ -3,6 +3,7 @@ import {
   MAX_PLAYERS,
   MIN_PLAYERS,
   TREE_DEPTH,
+  appendQueuedPlayerIds,
   answersToLeafIndex,
   childNodeIndex,
   createGenreSchedule,
@@ -22,17 +23,10 @@ const ROOM_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const PRESENCE_INTERVAL_MS = 30 * 1000;
 const HOST_STALE_MS = 90 * 1000;
 const TREE_WIDTH = 1680;
-const LEVEL_Y = [24, 210, 396, 582];
-const LEAF_Y = 790;
-
-const PHASE_LABELS = {
-  lobby: "ロビー",
-  treeSetup: "質問の準備",
-  predicting: "到達点の予測",
-  answering: "代表者の回答",
-  reveal: "結果発表",
-  gameOver: "最終結果"
-};
+const NODE_HEIGHT = 176;
+const LEVEL_Y = [24, 244, 464, 684];
+const LEAF_Y = 920;
+const TREE_HEIGHT = 1048;
 
 const state = {
   roomId: roomIdFromUrl(),
@@ -242,7 +236,6 @@ function appShell(content) {
         h("span", {}, h("strong", {}, "どっちーな"), h("small", {}, "YES / NO PREDICTION GAME"))
       ),
       state.room ? h("div", { class: "header-room" },
-        h("span", { class: "phase-badge" }, PHASE_LABELS[state.room.phase] || state.room.phase),
         h("button", { class: "room-code", onclick: copyInvite, title: "招待URLをコピー" }, `ROOM ${state.room.id}`)
       ) : null
     ),
@@ -341,7 +334,7 @@ function renderPlayers() {
         h("span", { class: "player-index" }, String(index + 1).padStart(2, "0")),
         h("span", { class: "player-info" },
           h("strong", {}, player.name, player.id === room.hostPlayerId ? h("small", {}, " HOST") : null),
-          h("small", {}, activeIds.size && !activeIds.has(player.id) ? "観戦中" : isRepresentative ? "代表者" : "参加者")
+          h("small", {}, activeIds.size && !activeIds.has(player.id) ? "次ラウンドから参加" : isRepresentative ? "代表者" : "参加者")
         ),
         h("span", { class: "score" }, h("b", {}, String(player.score || 0)), " pt")
       );
@@ -404,7 +397,7 @@ function renderPrediction() {
       h("p", {}, h("strong", {}, `${Object.keys(round.predictions || {}).length} / ${round.eligiblePredictorIds.length}`), " 名が予測済み"),
       eligible && prediction == null
         ? button(state.predictionDraft == null ? "到達点を選択してください" : `到達点 ${state.predictionDraft + 1} で確定`, submitPrediction, "primary large", { disabled: state.predictionDraft == null || state.loading })
-        : h("p", { class: "waiting" }, isRepresentative ? "予測の確定を待っています。" : "予測は確定済みです。")
+        : h("p", { class: "waiting" }, isRepresentative ? "予測の確定を待っています。" : prediction != null ? "予測は確定済みです。" : "次のラウンドから投票へ参加できます。")
     ),
     isHost() ? h("div", { class: "danger-zone" }, button("このラウンドを無効終了", cancelRound, "danger compact")) : null
   );
@@ -420,7 +413,7 @@ function renderAnswering() {
       h("p", { class: "genre-chip" }, node.genreLabel),
       h("h2", {}, node.text),
       isRepresentative
-        ? h("div", { class: "answer-actions" }, button("NO", () => answerQuestion(false), "answer no", { disabled: state.loading }), button("YES", () => answerQuestion(true), "answer yes", { disabled: state.loading }))
+        ? h("div", { class: "answer-actions" }, button("YES", () => answerQuestion(true), "answer yes", { disabled: state.loading }), button("NO", () => answerQuestion(false), "answer no", { disabled: state.loading }))
         : h("p", { class: "waiting" }, "代表者が回答しています。")
     ),
     renderTreeBoard(),
@@ -432,34 +425,76 @@ function renderReveal() {
   const round = state.room.currentRound;
   const canceled = Boolean(round.cancelled);
   return h("div", { class: "stage-panel wide" },
-    stageHeader(`ROUND ${round.roundNumber} · RESULT`, canceled ? "このラウンドは無効になりました" : `到達点は ${round.reachedLeaf + 1}`, canceled ? "得点を加算せず、次の代表者へ進みます。" : round.winnerIds.length ? `${round.winnerIds.map((id) => playerName(id)).join("、")} が予測的中` : "このラウンドの的中者はいませんでした。"),
+    stageHeader(`ROUND ${round.roundNumber} · RESULT`, canceled ? "このラウンドは無効になりました" : "結果発表", canceled ? "得点を加算せず、次の代表者へ進みます。" : "予測結果を公開します。"),
+    !canceled ? renderCorrectPrediction(round) : null,
     renderTreeBoard({ revealNames: true }),
-    !canceled ? h("section", { class: "round-result" },
-      h("p", { class: "eyebrow" }, "CORRECT PREDICTIONS"),
-      round.winnerIds.length
-        ? h("div", { class: "winner-list" }, ...round.winnerIds.map((id) => h("span", {}, playerName(id), h("b", {}, "+1"))))
-        : h("p", { class: "muted" }, "該当者なし")
-    ) : null,
-    h("div", { class: "stage-actions" }, isHost() ? button(round.roundNumber >= state.room.gamePlayerIds.length ? "最終結果を見る" : "次のラウンドへ", nextRound, "primary large", { disabled: state.loading }) : h("p", { class: "waiting" }, "ホストの進行をお待ちください。"))
+    h("div", { class: "stage-actions" }, isHost() ? button(isFinalRound(state.room) ? "最終結果を見る" : "次のラウンドへ", nextRound, "primary large", { disabled: state.loading }) : h("p", { class: "waiting" }, "ホストの進行をお待ちください。"))
+  );
+}
+
+function renderCorrectPrediction(round) {
+  return h("section", { class: `correct-prediction ${round.winnerIds.length ? "has-winners" : ""}` },
+    h("p", { class: "celebration-label" }, "CORRECT PREDICTION"),
+    round.winnerIds.length
+      ? h("div", { class: "winner-list" }, ...round.winnerIds.map((id) => h("span", {}, h("strong", {}, playerName(id)), h("b", {}, "+1 POINT"))))
+      : h("p", { class: "no-winner" }, "該当者なし")
   );
 }
 
 function renderGameOver() {
-  const ranked = [...state.room.players]
-    .filter((player) => state.room.gamePlayerIds.includes(player.id))
-    .sort((a, b) => (b.score || 0) - (a.score || 0) || a.joinedAt.localeCompare(b.joinedAt));
+  const players = state.room.gamePlayerIds.map((id) => state.room.players.find((player) => player.id === id)).filter(Boolean);
   return h("div", { class: "stage-panel final-panel" },
     stageHeader("FINAL RESULT", "今宵の結果", "すべての代表者が回答を終えました。"),
-    h("ol", { class: "ranking" }, ...ranked.map((player, index) => h("li", { class: index === 0 ? "first" : "" },
-      h("span", { class: "rank" }, String(index + 1).padStart(2, "0")),
-      h("strong", {}, player.name),
-      h("span", {}, h("b", {}, String(player.score || 0)), " points")
-    ))),
-    h("details", { class: "history" }, h("summary", {}, "ラウンド履歴"), ...state.room.logs.map(renderLog)),
+    renderScoreMatrix(players, state.room.logs),
+    h("section", { class: "answer-history" },
+      h("header", {}, h("p", { class: "eyebrow" }, "ANSWER ARCHIVE"), h("h2", {}, "代表者ごとの回答")),
+      h("div", { class: "answer-history-grid" }, ...state.room.logs.map(renderAnswerHistory))
+    ),
     h("div", { class: "stage-actions" },
       button("結果をコピー", copyResults, "secondary large"),
       isHost() ? button("同じメンバーでもう一度", resetGame, "primary large") : null
     )
+  );
+}
+
+function renderScoreMatrix(players, logs) {
+  return h("section", { class: "matrix-section" },
+    h("header", {}, h("p", { class: "eyebrow" }, "PREDICTION MATRIX"), h("h2", {}, "予測結果一覧"), h("p", {}, "縦軸が予測者、横軸が代表者です。")),
+    h("div", { class: "matrix-scroll", tabindex: "0", "aria-label": "予測結果マトリクス。横方向にスクロールできます。" },
+      h("table", { class: "score-matrix" },
+        h("thead", {}, h("tr", {},
+          h("th", { scope: "col" }, "予測者 ＼ 代表者"),
+          ...players.map((player) => h("th", { scope: "col" }, player.name)),
+          h("th", { scope: "col", class: "total-column" }, "合計点")
+        )),
+        h("tbody", {}, ...players.map((predictor) => {
+          return h("tr", {},
+            h("th", { scope: "row" }, predictor.name),
+            ...players.map((representative) => renderMatrixCell(logs.find((item) => item.representativeId === representative.id), representative, predictor)),
+            h("td", { class: "matrix-total" }, h("strong", {}, String(predictor.score || 0)), h("small", {}, " pt"))
+          );
+        }))
+      )
+    )
+  );
+}
+
+function renderMatrixCell(log, representative, predictor) {
+  if (representative.id === predictor.id) return h("td", { class: "matrix-cell neutral", title: "代表者本人" }, "—");
+  if (!log || log.cancelled || log.predictions?.[predictor.id] == null) return h("td", { class: "matrix-cell neutral", title: "予測対象外" }, "—");
+  const success = log.winnerIds.includes(predictor.id);
+  return h("td", { class: `matrix-cell ${success ? "success" : "failure"}`, title: success ? "予測成功" : "予測失敗", "aria-label": `${predictor.name}の予測は${success ? "成功" : "失敗"}` }, success ? "✓" : "×");
+}
+
+function renderAnswerHistory(log) {
+  return h("article", { class: "answer-history-card" },
+    h("header", {}, h("small", {}, `ROUND ${log.roundNumber}`), h("h3", {}, log.representativeName), log.cancelled ? h("span", { class: "canceled-label" }, "無効") : null),
+    log.answers.length
+      ? h("ol", {}, ...log.answers.map((answer, index) => {
+        const node = log.nodes.find((item) => item.index === answer.nodeIndex);
+        return h("li", {}, h("span", { class: "answer-question" }, h("small", {}, `Q${index + 1}`), node?.text || "質問を確認できません"), h("strong", { class: answer.answer ? "answer-yes" : "answer-no" }, answer.answer ? "YES" : "NO"));
+      }))
+      : h("p", { class: "muted" }, "回答なし")
   );
 }
 
@@ -475,7 +510,7 @@ function renderTreeBoard(options = {}) {
     "data-tree-key": `${round.roundNumber}-${state.room.phase}`,
     "aria-label": "質問の決定木。横方向にスクロールできます。"
   });
-  const canvas = h("div", { class: "tree-canvas", style: `width:${TREE_WIDTH}px;height:930px` });
+  const canvas = h("div", { class: "tree-canvas", style: `width:${TREE_WIDTH}px;height:${TREE_HEIGHT}px` });
   canvas.append(connectorSvg(round, path));
 
   for (const node of round.nodes) {
@@ -500,16 +535,24 @@ function renderTreeBoard(options = {}) {
     const selected = state.predictionDraft === leaf || ownPrediction(state.room) === leaf;
     const reached = round.reachedLeaf === leaf;
     const names = options.revealNames ? predictorNamesAtLeaf(round, leaf) : [];
+    const tooltipId = `leaf-voters-${round.roundNumber}-${leaf}`;
     const leafContent = [
       h("small", {}, "DEST."),
       h("strong", {}, String(leaf + 1).padStart(2, "0")),
       h("span", { class: "prediction-count" }, `${counts[leaf]}票`),
-      ...names.map((name) => h("i", {}, name))
+      names.length ? h("span", { class: "voter-hint" }, "投票者") : null,
+      names.length ? h("span", { id: tooltipId, class: "leaf-voter-tooltip", role: "tooltip" },
+        h("small", {}, "VOTERS"),
+        ...names.map((name) => h("b", {}, name))
+      ) : null
     ];
     const attrs = {
-      class: `tree-leaf ${selected ? "selected" : ""} ${reached ? "reached" : ""}`,
+      class: `tree-leaf ${selected ? "selected" : ""} ${reached ? "reached" : ""} ${names.length ? "has-voters" : ""} ${leaf < 2 ? "tooltip-left" : ""} ${leaf > 13 ? "tooltip-right" : ""}`,
       style: `left:${x}px;top:${LEAF_Y}px`,
-      title: names.length ? names.join("、") : `到達点 ${leaf + 1}`
+      title: names.length ? names.join("、") : `到達点 ${leaf + 1}`,
+      tabindex: names.length ? "0" : null,
+      "aria-describedby": names.length ? tooltipId : null,
+      "aria-label": names.length ? `到達点 ${leaf + 1}、${counts[leaf]}票。投票者は${names.join("、")}` : `到達点 ${leaf + 1}、${counts[leaf]}票`
     };
     const leafNode = options.selectableLeaves
       ? h("button", { ...attrs, type: "button", onclick: () => selectLeaf(leaf), "aria-pressed": String(selected) }, ...leafContent)
@@ -523,37 +566,46 @@ function renderTreeBoard(options = {}) {
 function connectorSvg(round, path) {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("class", "tree-connectors");
-  svg.setAttribute("viewBox", `0 0 ${TREE_WIDTH} 930`);
+  svg.setAttribute("viewBox", `0 0 ${TREE_WIDTH} ${TREE_HEIGHT}`);
   svg.setAttribute("aria-hidden", "true");
   for (let parent = 0; parent < 7; parent += 1) {
     const depth = nodeDepth(parent);
     const parentOffset = parent - (2 ** depth - 1);
     const parentX = (parentOffset + 0.5) * (TREE_WIDTH / 2 ** depth);
-    for (const answer of [false, true]) {
+    for (const answer of [true, false]) {
       const child = childNodeIndex(parent, answer);
       const childDepth = depth + 1;
       const childOffset = child - (2 ** childDepth - 1);
       const childX = (childOffset + 0.5) * (TREE_WIDTH / 2 ** childDepth);
-      const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      line.setAttribute("d", `M ${parentX} ${LEVEL_Y[depth] + 138} C ${parentX} ${LEVEL_Y[depth] + 170}, ${childX} ${LEVEL_Y[childDepth] - 28}, ${childX} ${LEVEL_Y[childDepth]}`);
-      line.setAttribute("class", path.has(parent) && path.has(child) ? "active" : "");
-      svg.append(line);
+      appendBranch(svg, parentX, LEVEL_Y[depth] + NODE_HEIGHT, childX, LEVEL_Y[childDepth], answer, path.has(parent) && path.has(child));
     }
   }
   for (let parent = 7; parent < 15; parent += 1) {
     const offset = parent - 7;
     const parentX = (offset + 0.5) * (TREE_WIDTH / 8);
-    for (const answer of [false, true]) {
-      const leaf = offset * 2 + (answer ? 1 : 0);
+    for (const answer of [true, false]) {
+      const leaf = offset * 2 + (answer ? 0 : 1);
       const leafX = (leaf + 0.5) * (TREE_WIDTH / LEAF_COUNT);
-      const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      line.setAttribute("d", `M ${parentX} ${LEVEL_Y[3] + 138} C ${parentX} 755, ${leafX} 755, ${leafX} ${LEAF_Y}`);
       const finalAnswer = round.answers.find((item) => item.nodeIndex === parent)?.answer;
-      if (path.has(parent) && finalAnswer === answer) line.setAttribute("class", "active");
-      svg.append(line);
+      appendBranch(svg, parentX, LEVEL_Y[3] + NODE_HEIGHT, leafX, LEAF_Y, answer, path.has(parent) && finalAnswer === answer);
     }
   }
   return svg;
+}
+
+function appendBranch(svg, parentX, parentY, childX, childY, answer, active) {
+  const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  const middleY = (parentY + childY) / 2;
+  line.setAttribute("d", `M ${parentX} ${parentY} C ${parentX} ${middleY}, ${childX} ${middleY}, ${childX} ${childY}`);
+  line.setAttribute("class", `branch ${answer ? "yes" : "no"} ${active ? "active" : ""}`);
+  svg.append(line);
+  const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  label.setAttribute("x", String((parentX + childX) / 2));
+  label.setAttribute("y", String(middleY - 5));
+  label.setAttribute("class", `branch-label ${answer ? "yes" : "no"}`);
+  label.setAttribute("text-anchor", "middle");
+  label.textContent = answer ? "YES" : "NO";
+  svg.append(label);
 }
 
 function renderGenreLegend(round) {
@@ -561,14 +613,6 @@ function renderGenreLegend(round) {
     const genre = state.questionBank.genres.find((item) => item.id === genreId);
     return h("span", {}, h("small", {}, `LEVEL ${depth + 1}`), h("b", {}, genre?.label || genreId));
   }));
-}
-
-function renderLog(log) {
-  return h("article", { class: "history-item" },
-    h("div", {}, h("strong", {}, `Round ${log.roundNumber}`), h("span", {}, log.cancelled ? "無効" : `到達点 ${log.reachedLeaf + 1}`)),
-    h("p", {}, `代表者：${log.representativeName}`),
-    !log.cancelled ? h("p", {}, `的中：${log.winnerNames.length ? log.winnerNames.join("、") : "なし"}`) : null
-  );
 }
 
 async function createRoom() {
@@ -620,7 +664,7 @@ async function registerName(event) {
   const playerId = randomId();
   await runAction(async () => {
     await state.store.update((room) => {
-      if (room.players.length >= 16) throw new Error("このルームは満席です。");
+      if (room.players.length >= MAX_PLAYERS) throw new Error("このルームは8名で満席です。");
       room.players.push({ id: playerId, name, score: 0, joinedAt: nowIso(), lastSeenAt: nowIso() });
       if (!room.hostPlayerId && state.hostKey && state.hostKey === room.hostKey) room.hostPlayerId = playerId;
       return room;
@@ -639,7 +683,7 @@ async function startGame() {
       room.players = room.players.map((player) => ({ ...player, score: 0 }));
       room.gamePlayerIds = room.players.map((player) => player.id);
       room.representativeIndex = 0;
-      room.genreSchedule = createGenreSchedule(state.questionBank.genres.map((genre) => genre.id), room.gamePlayerIds.length);
+      room.genreSchedule = createGenreSchedule(state.questionBank.genres.map((genre) => genre.id), MAX_PLAYERS);
       room.usedQuestionIds = [];
       room.logs = [];
       room.currentRound = createRound(room, 0);
@@ -772,6 +816,7 @@ async function nextRound() {
       requireHost(room);
       requirePhase(room, "reveal");
       room.logs.push(roundLog(room));
+      room.gamePlayerIds = appendQueuedPlayerIds(room.gamePlayerIds, room.players.map((player) => player.id));
       room.representativeIndex += 1;
       if (room.representativeIndex >= room.gamePlayerIds.length) {
         room.currentRound = null;
@@ -863,7 +908,15 @@ async function copyResults() {
   ranked.forEach((player, index) => lines.push(`${index + 1}位 ${player.name}: ${player.score || 0}点`));
   for (const log of state.room.logs) {
     lines.push("", `Round ${log.roundNumber} 代表者: ${log.representativeName}`);
-    lines.push(log.cancelled ? "無効終了" : `到達点: ${log.reachedLeaf + 1} / 的中: ${log.winnerNames.join("、") || "なし"}`);
+    if (log.cancelled) {
+      lines.push("無効終了");
+      continue;
+    }
+    for (const [index, answer] of log.answers.entries()) {
+      const node = log.nodes.find((item) => item.index === answer.nodeIndex);
+      lines.push(`Q${index + 1}: ${node?.text || "質問不明"} → ${answer.answer ? "YES" : "NO"}`);
+    }
+    lines.push(`的中: ${log.winnerNames.join("、") || "なし"}`);
   }
   await copyText(lines.join("\n"));
   setNotice("結果をコピーしました。");
@@ -936,6 +989,11 @@ function ownPrediction(room) {
 
 function playerName(playerId, room = state.room) {
   return room?.players.find((player) => player.id === playerId)?.name || "不明な参加者";
+}
+
+function isFinalRound(room) {
+  const queuedPlayerExists = room.players.some((player) => !room.gamePlayerIds.includes(player.id));
+  return !queuedPlayerExists && room.representativeIndex >= room.gamePlayerIds.length - 1;
 }
 
 function predictorNamesAtLeaf(round, leaf) {
