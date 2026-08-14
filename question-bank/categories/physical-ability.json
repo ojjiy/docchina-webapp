@@ -1,0 +1,31 @@
+{
+  "id": "physical-ability",
+  "label": "運動・身体能力",
+  "answerType": "yes-no",
+  "description": "30歳前後の参加者でも回答が分かれやすい、記録、技能、競技経験に関する自己記述文",
+  "questions": [
+    { "id": "physical-ability-01", "text": "50メートル走を7秒未満で走ったことがある。", "theme": "sports-health" },
+    { "id": "physical-ability-03", "text": "1キロメートルを5分未満で走れる。", "theme": "sports-health" },
+    { "id": "physical-ability-05", "text": "10キロメートル以上のマラソンを完走したことがある。", "theme": "sports-health" },
+    { "id": "physical-ability-06", "text": "ハーフマラソン以上の距離を完走したことがある。", "theme": "sports-health" },
+    { "id": "physical-ability-07", "text": "体力テストでA評価を取ったことがある。", "theme": "childhood" },
+    { "id": "physical-ability-08", "text": "立ち幅跳びで2メートル以上跳べる。", "theme": "sports-health" },
+    { "id": "physical-ability-09", "text": "左右どちらかの握力で45キログラム以上を記録したことがある。", "theme": "sports-health" },
+    { "id": "physical-ability-10", "text": "30秒間で上体起こしを30回以上できる。", "theme": "sports-health" },
+    { "id": "physical-ability-12", "text": "長座体前屈で50センチメートル以上を記録したことがある。", "theme": "sports-health" },
+    { "id": "physical-ability-13", "text": "懸垂を連続10回以上できる。", "theme": "sports-health" },
+    { "id": "physical-ability-14", "text": "腕立て伏せを連続30回以上できる。", "theme": "sports-health" },
+    { "id": "physical-ability-15", "text": "プランクの姿勢を2分以上保てる。", "theme": "sports-health" },
+    { "id": "physical-ability-16", "text": "自重スクワットを連続50回以上できる。", "theme": "sports-health" },
+    { "id": "physical-ability-17", "text": "縄跳びの二重跳びを連続10回以上できる。", "theme": "childhood" },
+    { "id": "physical-ability-18", "text": "補助なしで倒立を10秒以上保てる。", "theme": "challenge" },
+    { "id": "physical-ability-19", "text": "足をつかずに100メートル以上泳げる。", "theme": "sports-health" },
+    { "id": "physical-ability-21", "text": "スキーまたはスノーボードで中級者向けコースを滑れる。", "theme": "travel" },
+    { "id": "physical-ability-23", "text": "スポーツの県大会で優勝したことがある。", "theme": "sports-health" },
+    { "id": "physical-ability-26", "text": "野球ボールを50メートル以上投げられる。", "theme": "sports-health" },
+    { "id": "physical-ability-27", "text": "サッカーボールのリフティングを連続20回以上できる。", "theme": "sports-health" },
+    { "id": "physical-ability-28", "text": "バスケットボールのフリースローを10本中7本以上決められる。", "theme": "sports-health" },
+    { "id": "physical-ability-29", "text": "バドミントンで30回以上ラリーを続けられる。", "theme": "sports-health" },
+    { "id": "physical-ability-30", "text": "鉄棒で逆上がりを連続3回以上できる。", "theme": "childhood" }
+  ]
+}

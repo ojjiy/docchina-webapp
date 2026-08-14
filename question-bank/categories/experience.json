@@ -1,0 +1,31 @@
+{
+  "id": "experience",
+  "label": "これまでの経験有無",
+  "answerType": "yes-no",
+  "description": "本人が過去に経験したことを言い切る自己記述文",
+  "questions": [
+    { "id": "experience-01", "text": "一人旅をしたことがある。", "theme": "travel" },
+    { "id": "experience-03", "text": "小さい頃にたくさん習い事をしていた。", "theme": "entertainment" },
+    { "id": "experience-05", "text": "日の出を見るために早起きしたことがある。", "theme": "daily" },
+    { "id": "experience-07", "text": "百人以上の前で何かしらの発表をしたことがある。", "theme": "work-study" },
+    { "id": "experience-08", "text": "半年以上お金を貯めてほしいものを買ったことがある。", "theme": "money" },
+    { "id": "experience-09", "text": "社会人になってから、一日スマートフォンを使わずに過ごしたことがある。", "theme": "digital" },
+    { "id": "experience-11", "text": "子どもの頃、秘密基地を作ったことがある。", "theme": "childhood" },
+    { "id": "experience-12", "text": "将来の自分に向けて手紙を書いたことがある。", "theme": "future" },
+    { "id": "experience-16", "text": "ボランティア活動に参加したことがある。", "theme": "community" },
+    { "id": "experience-17", "text": "行列に三十分以上並んで食事をしたことがある。", "theme": "food" },
+    { "id": "experience-18", "text": "予定を決めずに日帰りで出かけたことがある。", "theme": "travel" },
+    { "id": "experience-19", "text": "同じ映画やドラマ・アニメを三回以上見たことがある。", "theme": "entertainment" },
+    { "id": "experience-22", "text": "初対面の人と二人きりで一時間以上話したことがある。", "theme": "relationships" },
+    { "id": "experience-24", "text": "中古品を購入したことがある。", "theme": "money" },
+    { "id": "experience-26", "text": "五キロメートル以上を続けて歩いたことがある。", "theme": "sports-health" },
+    { "id": "experience-31", "text": "雪道を車で走ったことがある。", "theme": "sports-health" },
+    { "id": "experience-27", "text": "子どもの頃に学級委員・クラス委員を務めたことがある。", "theme": "childhood" },
+    { "id": "experience-30", "text": "町中の落とし物を警察に届けたことがある。", "theme": "community" },
+    { "id": "experience-32", "text": "緊急通報（110/118/119）をしたことがある。", "theme": "community" },
+    { "id": "experience-33", "text": "スカイダイビングをしたことがある。", "theme": "community" },
+    { "id": "experience-34", "text": "バンジージャンプをしたことがある。", "theme": "community" },
+    { "id": "experience-35", "text": "ダイビングをしたことがある。", "theme": "community" },
+    { "id": "experience-36", "text": "富士山に登ったことがある。", "theme": "community" }
+  ]
+}
