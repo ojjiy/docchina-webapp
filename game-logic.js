@@ -1,6 +1,7 @@
-export const TREE_DEPTH = 4;
-export const NODE_COUNT = 15;
-export const LEAF_COUNT = 16;
+export const TREE_DEPTH = 3;
+export const NODE_COUNT = 7;
+export const LEAF_COUNT = 8;
+export const MIN_QUESTIONS_PER_GENRE = 7;
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 8;
 
@@ -41,7 +42,7 @@ export function getPathNodeIndices(answers) {
 
 export function createGenreSchedule(genreIds, roundCount, random = Math.random) {
   if (!Array.isArray(genreIds) || genreIds.length < TREE_DEPTH) {
-    throw new Error("4種類以上のジャンルが必要です。");
+    throw new Error(`${TREE_DEPTH}種類以上のジャンルが必要です。`);
   }
   const count = Math.max(1, Math.min(Number(roundCount) || 1, genreIds.length));
   const order = shuffle(genreIds, random);
@@ -55,14 +56,14 @@ export function validateQuestionBank(bank) {
   const genres = Array.isArray(bank?.genres) ? bank.genres : [];
   const genreIds = new Set();
   const questionIds = new Set();
-  if (genres.length < TREE_DEPTH) errors.push("ジャンルは4種類以上必要です。");
+  if (genres.length < MAX_PLAYERS) errors.push(`ジャンルは${MAX_PLAYERS}種類以上必要です。`);
 
   for (const genre of genres) {
     if (!genre?.id || genreIds.has(genre.id)) errors.push(`ジャンルIDが不正または重複しています: ${genre?.id || "(空)"}`);
     genreIds.add(genre?.id);
     if (!String(genre?.label || "").trim()) errors.push(`ジャンル名が空です: ${genre?.id || "(不明)"}`);
-    if (!Array.isArray(genre?.questions) || genre.questions.length < LEAF_COUNT) {
-      errors.push(`${genre?.label || genre?.id || "ジャンル"}には16問以上必要です。`);
+    if (!Array.isArray(genre?.questions) || genre.questions.length < MIN_QUESTIONS_PER_GENRE) {
+      errors.push(`${genre?.label || genre?.id || "ジャンル"}には${MIN_QUESTIONS_PER_GENRE}問以上必要です。`);
       continue;
     }
     for (const question of genre.questions) {
@@ -116,18 +117,134 @@ export function rerollNode(bank, nodes, usedQuestionIds, nodeIndex, random = Mat
   );
 }
 
+export function predictionPathAnswers(prediction) {
+  const answersByNode = prediction?.answersByNode || {};
+  const answers = [];
+  let currentNodeIndex = 0;
+  for (let depth = 0; depth < TREE_DEPTH; depth += 1) {
+    const answer = answersByNode[currentNodeIndex];
+    if (typeof answer !== "boolean") return null;
+    answers.push(answer);
+    if (depth < TREE_DEPTH - 1) currentNodeIndex = childNodeIndex(currentNodeIndex, answer);
+  }
+  return answers;
+}
+
+export function predictionToLeafIndex(prediction) {
+  const answers = predictionPathAnswers(prediction);
+  return answers ? answersToLeafIndex(answers) : null;
+}
+
 export function predictionCounts(predictions) {
   const counts = Array(LEAF_COUNT).fill(0);
-  for (const leaf of Object.values(predictions || {})) {
+  for (const prediction of Object.values(predictions || {})) {
+    const leaf = predictionToLeafIndex(prediction);
     if (Number.isInteger(leaf) && leaf >= 0 && leaf < LEAF_COUNT) counts[leaf] += 1;
   }
   return counts;
 }
 
-export function scorePredictions(predictions, reachedLeaf) {
-  return Object.entries(predictions || {})
-    .filter(([, leaf]) => leaf === reachedLeaf)
-    .map(([playerId]) => playerId);
+export function scoreRound({ predictions, answers, representativeId, representativePrediction, scoreConfig }) {
+  const predictorEntries = Object.entries(predictions || {});
+  const pathAnswers = Array.isArray(answers) ? answers : [];
+  if (pathAnswers.length !== TREE_DEPTH) throw new Error(`${TREE_DEPTH}問分の回答が必要です。`);
+
+  const config = {
+    questionCorrect: Number(scoreConfig?.questionCorrect || 0),
+    allQuestionsCorrectBonus: Number(scoreConfig?.allQuestionsCorrectBonus || 0),
+    confidenceCorrectBonus: Number(scoreConfig?.confidenceCorrectBonus || 0),
+    soleCorrectBonus: Number(scoreConfig?.soleCorrectBonus || 0),
+    minorityCorrectBonus: Number(scoreConfig?.minorityCorrectBonus || 0),
+    representativePredictionPerPlayer: Number(scoreConfig?.representativePredictionPerPlayer || 0)
+  };
+  const correctPlayerIdsByNode = new Map(pathAnswers.map((answer) => {
+    const correctIds = predictorEntries
+      .filter(([, prediction]) => prediction?.answersByNode?.[answer.nodeIndex] === Boolean(answer.answer))
+      .map(([playerId]) => playerId);
+    return [answer.nodeIndex, correctIds];
+  }));
+
+  const breakdowns = {};
+  for (const [playerId, prediction] of predictorEntries) {
+    const nodeResults = pathAnswers.map((answer) => {
+      const correct = prediction?.answersByNode?.[answer.nodeIndex] === Boolean(answer.answer);
+      const correctCount = correctPlayerIdsByNode.get(answer.nodeIndex)?.length || 0;
+      let groupBonusType = null;
+      let groupBonusPoints = 0;
+      if (correct && predictorEntries.length >= 2 && correctCount === 1) {
+        groupBonusType = "sole";
+        groupBonusPoints = config.soleCorrectBonus;
+      } else if (correct && correctCount > 1 && correctCount < predictorEntries.length / 2) {
+        groupBonusType = "minority";
+        groupBonusPoints = config.minorityCorrectBonus;
+      }
+      const confidenceCorrect = correct && prediction.confidenceDepth === answer.depth;
+      return {
+        nodeIndex: answer.nodeIndex,
+        depth: answer.depth,
+        predictedAnswer: prediction?.answersByNode?.[answer.nodeIndex],
+        actualAnswer: Boolean(answer.answer),
+        correct,
+        correctPlayerCount: correctCount,
+        questionPoints: correct ? config.questionCorrect : 0,
+        confidencePoints: confidenceCorrect ? config.confidenceCorrectBonus : 0,
+        groupBonusType,
+        groupBonusPoints
+      };
+    });
+    const correctCount = nodeResults.filter((result) => result.correct).length;
+    const questionPoints = nodeResults.reduce((sum, result) => sum + result.questionPoints, 0);
+    const confidenceBonus = nodeResults.reduce((sum, result) => sum + result.confidencePoints, 0);
+    const soleCorrectBonus = nodeResults
+      .filter((result) => result.groupBonusType === "sole")
+      .reduce((sum, result) => sum + result.groupBonusPoints, 0);
+    const minorityCorrectBonus = nodeResults
+      .filter((result) => result.groupBonusType === "minority")
+      .reduce((sum, result) => sum + result.groupBonusPoints, 0);
+    const groupBonus = soleCorrectBonus + minorityCorrectBonus;
+    const allQuestionsCorrectBonus = correctCount === TREE_DEPTH ? config.allQuestionsCorrectBonus : 0;
+    breakdowns[playerId] = {
+      role: "predictor",
+      correctCount,
+      questionPoints,
+      allQuestionsCorrectBonus,
+      confidenceBonus,
+      soleCorrectBonus,
+      minorityCorrectBonus,
+      groupBonus,
+      representativePredictionMatches: 0,
+      representativePredictionBonus: 0,
+      total: questionPoints + allQuestionsCorrectBonus + confidenceBonus + groupBonus,
+      nodeResults
+    };
+  }
+
+  const guessedCounts = representativePrediction?.correctCountsByPlayerId || {};
+  const representativePredictionMatches = predictorEntries.filter(([playerId]) => (
+    Number(guessedCounts[playerId]) === breakdowns[playerId].correctCount
+  )).length;
+  const representativePredictionBonus = representativePredictionMatches * config.representativePredictionPerPlayer;
+  breakdowns[representativeId] = {
+    role: "representative",
+    correctCount: null,
+    questionPoints: 0,
+    allQuestionsCorrectBonus: 0,
+    confidenceBonus: 0,
+    soleCorrectBonus: 0,
+    minorityCorrectBonus: 0,
+    groupBonus: 0,
+    representativePredictionMatches,
+    representativePredictionBonus,
+    total: representativePredictionBonus,
+    nodeResults: []
+  };
+
+  return {
+    breakdowns,
+    allCorrectIds: predictorEntries
+      .filter(([playerId]) => breakdowns[playerId].correctCount === TREE_DEPTH)
+      .map(([playerId]) => playerId)
+  };
 }
 
 export function appendQueuedPlayerIds(gamePlayerIds, playerIds, maximum = MAX_PLAYERS) {

@@ -2,6 +2,7 @@ import {
   LEAF_COUNT,
   MAX_PLAYERS,
   MIN_PLAYERS,
+  NODE_COUNT,
   TREE_DEPTH,
   appendQueuedPlayerIds,
   answersToLeafIndex,
@@ -10,11 +11,13 @@ import {
   getPathNodeIndices,
   nodeDepth,
   predictionCounts,
+  predictionToLeafIndex,
   rerollNode,
   sampleRoundNodes,
-  scorePredictions,
+  scoreRound,
   validateQuestionBank
 } from "./game-logic.js";
+import { GAME_RULES_VERSION, SCORE_CONFIG, snapshotScoreConfig } from "./game-config.js";
 
 const FIREBASE_APP_URL = "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 const FIREBASE_STORE_URL = "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
@@ -22,11 +25,11 @@ const FIREBASE_APP_CHECK_URL = "https://www.gstatic.com/firebasejs/10.12.5/fireb
 const ROOM_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const PRESENCE_INTERVAL_MS = 30 * 1000;
 const HOST_STALE_MS = 90 * 1000;
-const TREE_WIDTH = 1680;
-const NODE_HEIGHT = 176;
-const LEVEL_Y = [24, 244, 464, 684];
-const LEAF_Y = 920;
-const TREE_HEIGHT = 1048;
+const TREE_WIDTH = 1200;
+const NODE_HEIGHT = 212;
+const LEVEL_Y = [24, 282, 540];
+const LEAF_Y = 804;
+const TREE_HEIGHT = 934;
 
 const state = {
   roomId: roomIdFromUrl(),
@@ -42,7 +45,10 @@ const state = {
   error: "",
   notice: "",
   nameDraft: "",
-  predictionDraft: null,
+  predictionDraft: {},
+  confidenceDraft: null,
+  representativePredictionDraft: {},
+  draftRoundKey: null,
   presenceTimer: null
 };
 
@@ -190,7 +196,11 @@ async function boot() {
         state.playerId = null;
         sessionStorage.removeItem(playerKey(room.id));
       }
-      state.predictionDraft = ownPrediction(room) ?? state.predictionDraft;
+      const draftRoundKey = room?.currentRound?.createdAt || null;
+      if (state.draftRoundKey !== draftRoundKey) {
+        resetRoundDrafts();
+        state.draftRoundKey = draftRoundKey;
+      }
       render();
       maintainPresence();
     },
@@ -224,6 +234,7 @@ function renderContent() {
   if (!state.roomId) return renderHome();
   if (state.missingRoom && !state.room) return renderMissingRoom();
   if (!state.room) return loadingPanel("ルームを読み込んでいます");
+  if (state.room.rulesVersion !== GAME_RULES_VERSION) return renderIncompatibleRoom();
   if (!currentPlayer()) return renderNameRegistration();
   return renderRoom();
 }
@@ -256,7 +267,7 @@ function renderHome() {
     h("section", { class: "hero" },
       h("p", { class: "eyebrow" }, "A GAME OF INSIGHT AND PREDICTION"),
       h("h1", {}, "答えの先を、", h("br"), "誰よりも深く読む。"),
-      h("p", { class: "hero-copy" }, "4つのYes / Noをたどった先は、16の到達点のうちどこなのか。代表者の価値観を予測し、静かに一票を置くオンラインボードゲームです。"),
+      h("p", { class: "hero-copy" }, "7つの質問を先読みし、代表者が実際にたどる3つのYes / Noを当てる。読みの深さと勝負勘を競うオンラインボードゲームです。"),
       h("div", { class: "ornament", "aria-hidden": "true" }, h("span"), h("i"), h("span"))
     ),
     h("section", { class: "entry-grid", "aria-label": "ゲームを始める" },
@@ -279,9 +290,9 @@ function renderHome() {
     h("section", { class: "how-to" },
       h("p", { class: "eyebrow" }, "HOW TO PLAY"),
       h("div", { class: "steps" },
-        step("01", "予測する", "代表者以外は、答えの先にある葉を一つ選びます。"),
-        step("02", "答える", "代表者が4つの質問へYesまたはNoで答えます。"),
-        step("03", "見届ける", "到達した葉を当てた参加者が1点を獲得します。")
+        step("01", "予測する", "代表者以外は7問すべてを予想し、自信のあるカテゴリを選びます。"),
+        step("02", "答える", "代表者は皆の正解数を予想してから、実経路の3問に答えます。"),
+        step("03", "競い合う", "質問ごとの正解点と、全問一致・少数派などのボーナスを獲得します。")
       )
     )
   );
@@ -290,6 +301,15 @@ function renderHome() {
 function renderMissingRoom() {
   return messagePanel("ルームが見つかりません", "URLまたは有効期限をご確認ください。ルームは最終操作から7日後に期限切れとなります。", "empty",
     h("a", { class: "button primary", href: baseUrl() }, "ホームへ戻る")
+  );
+}
+
+function renderIncompatibleRoom() {
+  return messagePanel(
+    "このルームは旧ルールで作成されています",
+    "新しい3段ルールとは互換性がないため、新しいルームを作成してください。",
+    "empty",
+    h("a", { class: "button primary", href: baseUrl() }, "新しいルームを作る")
   );
 }
 
@@ -358,9 +378,9 @@ function renderLobby() {
     stageHeader("THE DRAWING ROOM", "参加者をお待ちしています", "全員が着席したら、参加順に代表者を務めます。"),
     h("div", { class: "lobby-code" }, h("small", {}, "ROOM CODE"), h("strong", {}, state.room.id), button("コピー", copyInvite, "ghost compact")),
     h("div", { class: "rule-grid" },
-      ruleCard("4", "質問数", "代表者は4つの質問に回答"),
-      ruleCard("16", "到達点", "参加者は一つの葉を予測"),
-      ruleCard("1", "正解点", "的中するごとに1ポイント")
+      ruleCard("7", "予想問題", "予想者は全ノードへ回答"),
+      ruleCard("3", "実経路", "代表者が答える質問数"),
+      ruleCard(String(SCORE_CONFIG.questionCorrect), "質問正解点", "各問にボーナスの機会")
     ),
     h("div", { class: "stage-actions" },
       isHost()
@@ -389,17 +409,74 @@ function renderPrediction() {
   const isRepresentative = round.representativeId === state.playerId;
   const prediction = ownPrediction(state.room);
   const eligible = round.eligiblePredictorIds.includes(state.playerId);
+  const representativeSubmitted = Boolean(round.representativePrediction);
+  const predictorSubmittedCount = Object.keys(round.predictions || {}).length;
   return h("div", { class: "stage-panel wide" },
-    stageHeader(`ROUND ${round.roundNumber} · PREDICTION`, `${playerName(round.representativeId)}さんは、どこへ到達する？`, isRepresentative ? "皆さんが予測を確定するまでお待ちください。" : prediction != null ? `到達点 ${prediction + 1} で確定しました。` : "質問を読み、代表者の答えを予測して到達点を一つ選んでください。"),
+    stageHeader(
+      `ROUND ${round.roundNumber} · PREDICTION`,
+      isRepresentative ? "みんなの正解数を読む" : `${playerName(round.representativeId)}さんの答えを読む`,
+      isRepresentative
+        ? representativeSubmitted ? "正解数の予想を確定しました。皆さんの提出をお待ちください。" : "他の参加者が実経路3問のうち何問を当てるか予想してください。"
+        : prediction ? "7問の予想を確定しました。代表者の回答をお待ちください。" : "すべての質問へYes / Noで予想し、自信のあるカテゴリを一つ選んでください。"
+    ),
     renderGenreLegend(round),
-    renderTreeBoard({ selectableLeaves: eligible && prediction == null }),
+    renderTreeBoard({ predictionEditor: eligible && !prediction, showOwnPrediction: eligible }),
+    isRepresentative && !representativeSubmitted ? renderRepresentativePredictionForm(round) : null,
+    eligible && !prediction ? renderConfidencePicker(round) : null,
     h("div", { class: "prediction-status" },
-      h("p", {}, h("strong", {}, `${Object.keys(round.predictions || {}).length} / ${round.eligiblePredictorIds.length}`), " 名が予測済み"),
-      eligible && prediction == null
-        ? button(state.predictionDraft == null ? "到達点を選択してください" : `到達点 ${state.predictionDraft + 1} で確定`, submitPrediction, "primary large", { disabled: state.predictionDraft == null || state.loading })
-        : h("p", { class: "waiting" }, isRepresentative ? "予測の確定を待っています。" : prediction != null ? "予測は確定済みです。" : "次のラウンドから投票へ参加できます。")
+      h("p", {}, h("strong", {}, `${predictorSubmittedCount} / ${round.eligiblePredictorIds.length}`), " 名の予想者が提出済み"),
+      h("p", { class: "sub-status" }, `回答者の正解数予想：${representativeSubmitted ? "提出済み" : "未提出"}`),
+      eligible && !prediction
+        ? button(
+          predictionReady(round) ? "7問の予想を確定" : "7問すべてと自信カテゴリを選んでください",
+          submitPrediction,
+          "primary large",
+          { disabled: !predictionReady(round) || state.loading }
+        )
+        : h("p", { class: "waiting" }, isRepresentative ? "全員の提出が揃うと回答へ進みます。" : prediction ? "予想は確定済みです。" : "次のラウンドから予想へ参加できます。")
     ),
     isHost() ? h("div", { class: "danger-zone" }, button("このラウンドを無効終了", cancelRound, "danger compact")) : null
+  );
+}
+
+function renderRepresentativePredictionForm(round) {
+  return h("section", { class: "representative-prediction" },
+    h("header", {}, h("p", { class: "eyebrow" }, "ANSWERER'S FORECAST"), h("h2", {}, "参加者ごとの正解数予想"), h("p", {}, "実経路3問のうち何問を当てるか、0〜3で選びます。")),
+    h("div", { class: "count-prediction-grid" }, ...round.eligiblePredictorIds.map((playerId) => {
+      const selected = state.representativePredictionDraft[playerId];
+      return h("label", { class: "count-prediction-row" },
+        h("strong", {}, playerName(playerId)),
+        h("select", {
+          onchange: (event) => {
+            state.representativePredictionDraft[playerId] = Number(event.currentTarget.value);
+            render();
+          },
+          "aria-label": `${playerName(playerId)}さんの正解数予想`
+        },
+        h("option", { value: "", disabled: true, selected: selected == null }, "選択"),
+        ...Array.from({ length: TREE_DEPTH + 1 }, (_, count) => h("option", { value: String(count), selected: selected === count }, `${count}問`)))
+      );
+    })),
+    button(
+      representativePredictionReady(round) ? "正解数予想を確定" : "全員分を選んでください",
+      submitRepresentativePrediction,
+      "secondary large",
+      { disabled: !representativePredictionReady(round) || state.loading }
+    )
+  );
+}
+
+function renderConfidencePicker(round) {
+  return h("section", { class: "confidence-picker" },
+    h("div", {}, h("p", { class: "eyebrow" }, "CONFIDENCE MARKER"), h("h2", {}, "自信のあるカテゴリを一つ選ぶ"), h("p", {}, `選んだカテゴリの実経路問題に正解すると +${state.room.scoringConfig.confidenceCorrectBonus}点です。`)),
+    h("div", { class: "confidence-options" }, ...round.genreByDepth.map((genreId, depth) => {
+      const genre = state.questionBank.genres.find((item) => item.id === genreId);
+      const selected = state.confidenceDraft === depth;
+      return button(`${depth + 1}段目 · ${genre?.label || genreId}`, () => {
+        state.confidenceDraft = depth;
+        render();
+      }, selected ? "confidence selected" : "confidence", { "aria-pressed": String(selected) });
+    }))
   );
 }
 
@@ -426,18 +503,36 @@ function renderReveal() {
   const canceled = Boolean(round.cancelled);
   return h("div", { class: "stage-panel wide" },
     stageHeader(`ROUND ${round.roundNumber} · RESULT`, canceled ? "このラウンドは無効になりました" : "結果発表", canceled ? "得点を加算せず、次の代表者へ進みます。" : "予測結果を公開します。"),
-    !canceled ? renderCorrectPrediction(round) : null,
+    !canceled ? renderRoundScores(round) : null,
     renderTreeBoard({ revealNames: true }),
     h("div", { class: "stage-actions" }, isHost() ? button(isFinalRound(state.room) ? "最終結果を見る" : "次のラウンドへ", nextRound, "primary large", { disabled: state.loading }) : h("p", { class: "waiting" }, "ホストの進行をお待ちください。"))
   );
 }
 
-function renderCorrectPrediction(round) {
-  return h("section", { class: `correct-prediction ${round.winnerIds.length ? "has-winners" : ""}` },
-    h("p", { class: "celebration-label" }, "CORRECT PREDICTION"),
-    round.winnerIds.length
-      ? h("div", { class: "winner-list" }, ...round.winnerIds.map((id) => h("span", {}, h("strong", {}, playerName(id)), h("b", {}, "+1 POINT"))))
-      : h("p", { class: "no-winner" }, "該当者なし")
+function renderRoundScores(round) {
+  const orderedIds = [round.representativeId, ...round.eligiblePredictorIds];
+  return h("section", { class: "round-scores" },
+    h("header", {}, h("p", { class: "celebration-label" }, "ROUND SCORE"), h("h2", {}, "得点内訳")),
+    h("div", { class: "round-score-grid" }, ...orderedIds.map((playerId) => renderRoundScoreCard(playerId, round.scoreBreakdowns?.[playerId])))
+  );
+}
+
+function renderRoundScoreCard(playerId, breakdown) {
+  if (!breakdown) return null;
+  const details = breakdown.role === "representative"
+    ? [`正解数予想 ${breakdown.representativePredictionMatches}人一致`, `予想一致 +${breakdown.representativePredictionBonus}`]
+    : [
+      `${breakdown.correctCount} / ${TREE_DEPTH}問正解`,
+      `質問点 +${breakdown.questionPoints}`,
+      breakdown.allQuestionsCorrectBonus ? `全問一致 +${breakdown.allQuestionsCorrectBonus}` : null,
+      breakdown.confidenceBonus ? `自信 +${breakdown.confidenceBonus}` : null,
+      breakdown.soleCorrectBonus ? `単独正解 +${breakdown.soleCorrectBonus}` : null,
+      breakdown.minorityCorrectBonus ? `少数正解 +${breakdown.minorityCorrectBonus}` : null
+    ].filter(Boolean);
+  return h("article", { class: `round-score-card ${breakdown.role}` },
+    h("div", {}, h("small", {}, breakdown.role === "representative" ? "回答者" : "予想者"), h("h3", {}, playerName(playerId))),
+    h("ul", {}, ...details.map((detail) => h("li", {}, detail))),
+    h("strong", {}, `+${breakdown.total} pt`)
   );
 }
 
@@ -445,6 +540,7 @@ function renderGameOver() {
   const players = state.room.gamePlayerIds.map((id) => state.room.players.find((player) => player.id === id)).filter(Boolean);
   return h("div", { class: "stage-panel final-panel" },
     stageHeader("FINAL RESULT", "今宵の結果", "すべての代表者が回答を終えました。"),
+    renderRanking(players),
     renderScoreMatrix(players, state.room.logs),
     h("section", { class: "answer-history" },
       h("header", {}, h("p", { class: "eyebrow" }, "ANSWER ARCHIVE"), h("h2", {}, "代表者ごとの回答")),
@@ -455,6 +551,15 @@ function renderGameOver() {
       isHost() ? button("同じメンバーでもう一度", resetGame, "primary large") : null
     )
   );
+}
+
+function renderRanking(players) {
+  const ranked = rankedPlayers(players);
+  return h("ol", { class: "ranking" }, ...ranked.map(({ player, rank }) => h("li", { class: rank === 1 ? "first" : "" },
+    h("span", { class: "rank" }, `${rank}位`),
+    h("strong", {}, player.name),
+    h("span", {}, h("b", {}, String(player.score || 0)), " pt")
+  )));
 }
 
 function renderScoreMatrix(players, logs) {
@@ -480,10 +585,21 @@ function renderScoreMatrix(players, logs) {
 }
 
 function renderMatrixCell(log, representative, predictor) {
-  if (representative.id === predictor.id) return h("td", { class: "matrix-cell neutral", title: "代表者本人" }, "—");
-  if (!log || log.cancelled || log.predictions?.[predictor.id] == null) return h("td", { class: "matrix-cell neutral", title: "予測対象外" }, "—");
-  const success = log.winnerIds.includes(predictor.id);
-  return h("td", { class: `matrix-cell ${success ? "success" : "failure"}`, title: success ? "予測成功" : "予測失敗", "aria-label": `${predictor.name}の予測は${success ? "成功" : "失敗"}` }, success ? "✓" : "×");
+  if (!log || log.cancelled) return h("td", { class: "matrix-cell neutral", title: "予測対象外" }, "—");
+  const breakdown = log.scoreBreakdowns?.[predictor.id];
+  if (!breakdown) return h("td", { class: "matrix-cell neutral", title: "予測対象外" }, "—");
+  if (representative.id === predictor.id) {
+    return h("td", {
+      class: "matrix-cell representative-result",
+      title: `回答者予想 ${breakdown.representativePredictionMatches}人一致、${breakdown.total}点`
+    }, h("strong", {}, `${breakdown.representativePredictionMatches}人`), h("small", {}, `+${breakdown.total} pt`));
+  }
+  const resultClass = breakdown.correctCount === TREE_DEPTH ? "success" : breakdown.correctCount > 0 ? "partial" : "failure";
+  return h("td", {
+    class: `matrix-cell ${resultClass}`,
+    title: `${breakdown.correctCount}問正解、${breakdown.total}点`,
+    "aria-label": `${predictor.name}は${TREE_DEPTH}問中${breakdown.correctCount}問正解、${breakdown.total}点獲得`
+  }, h("strong", {}, `${breakdown.correctCount}/${TREE_DEPTH}`), h("small", {}, `+${breakdown.total} pt`));
 }
 
 function renderAnswerHistory(log) {
@@ -503,6 +619,12 @@ function renderTreeBoard(options = {}) {
   const counts = predictionCounts(round.predictions);
   const answerValues = round.answers.map((answer) => Boolean(answer.answer));
   const path = new Set(getPathNodeIndices(answerValues));
+  const ownSubmittedPrediction = ownPrediction(state.room);
+  const displayedPrediction = ownSubmittedPrediction || {
+    answersByNode: state.predictionDraft,
+    confidenceDepth: state.confidenceDraft
+  };
+  const displayedPredictionLeaf = predictionToLeafIndex(displayedPrediction);
   if (state.room.phase === "answering" && round.currentNodeIndex != null) path.add(round.currentNodeIndex);
   const container = h("div", {
     class: "tree-scroll",
@@ -520,19 +642,27 @@ function renderTreeBoard(options = {}) {
     const classes = ["tree-node", `depth-${depth}`];
     if (path.has(node.index)) classes.push("on-path");
     if (state.room.phase === "answering" && round.currentNodeIndex === node.index) classes.push("current");
+    const predictedAnswer = displayedPrediction.answersByNode?.[node.index];
+    const actualAnswer = round.answers.find((answer) => answer.nodeIndex === node.index)?.answer;
     const card = h("article", { class: classes.join(" "), style: `left:${x}px;top:${LEVEL_Y[depth]}px` },
       h("div", { class: "node-meta" }, h("span", {}, node.genreLabel), h("small", {}, `Q${node.index + 1}`)),
       options.editable
         ? h("textarea", { name: `node-${node.index}`, maxlength: "90", required: true, "aria-label": `質問${node.index + 1}` }, node.text)
         : h("p", {}, node.text),
-      options.editable ? button("引き直す", () => rerollQuestion(node.index), "node-reroll", { type: "button", disabled: state.loading }) : null
+      options.editable ? button("引き直す", () => rerollQuestion(node.index), "node-reroll", { type: "button", disabled: state.loading }) : null,
+      options.predictionEditor ? h("div", { class: "node-prediction-controls", "aria-label": `質問${node.index + 1}の予想` },
+        button("YES", () => selectPredictionAnswer(node.index, true), predictedAnswer === true ? "node-answer yes selected" : "node-answer yes", { "aria-pressed": String(predictedAnswer === true) }),
+        button("NO", () => selectPredictionAnswer(node.index, false), predictedAnswer === false ? "node-answer no selected" : "node-answer no", { "aria-pressed": String(predictedAnswer === false) })
+      ) : null,
+      options.showOwnPrediction && ownSubmittedPrediction ? h("div", { class: `submitted-node-answer ${predictedAnswer ? "yes" : "no"}` }, `あなたの予想 ${predictedAnswer ? "YES" : "NO"}`) : null,
+      state.room.phase === "reveal" && typeof actualAnswer === "boolean" ? h("div", { class: `actual-node-answer ${actualAnswer ? "yes" : "no"}` }, `実際 ${actualAnswer ? "YES" : "NO"}`) : null
     );
     canvas.append(card);
   }
 
   for (let leaf = 0; leaf < LEAF_COUNT; leaf += 1) {
     const x = (leaf + 0.5) * (TREE_WIDTH / LEAF_COUNT);
-    const selected = state.predictionDraft === leaf || ownPrediction(state.room) === leaf;
+    const selected = displayedPredictionLeaf === leaf;
     const reached = round.reachedLeaf === leaf;
     const names = options.revealNames ? predictorNamesAtLeaf(round, leaf) : [];
     const tooltipId = `leaf-voters-${round.roundNumber}-${leaf}`;
@@ -554,10 +684,7 @@ function renderTreeBoard(options = {}) {
       "aria-describedby": names.length ? tooltipId : null,
       "aria-label": names.length ? `到達点 ${leaf + 1}、${counts[leaf]}票。投票者は${names.join("、")}` : `到達点 ${leaf + 1}、${counts[leaf]}票`
     };
-    const leafNode = options.selectableLeaves
-      ? h("button", { ...attrs, type: "button", onclick: () => selectLeaf(leaf), "aria-pressed": String(selected) }, ...leafContent)
-      : h("div", attrs, ...leafContent);
-    canvas.append(leafNode);
+    canvas.append(h("div", attrs, ...leafContent));
   }
   container.append(canvas);
   return container;
@@ -568,7 +695,8 @@ function connectorSvg(round, path) {
   svg.setAttribute("class", "tree-connectors");
   svg.setAttribute("viewBox", `0 0 ${TREE_WIDTH} ${TREE_HEIGHT}`);
   svg.setAttribute("aria-hidden", "true");
-  for (let parent = 0; parent < 7; parent += 1) {
+  const finalLevelStart = 2 ** (TREE_DEPTH - 1) - 1;
+  for (let parent = 0; parent < finalLevelStart; parent += 1) {
     const depth = nodeDepth(parent);
     const parentOffset = parent - (2 ** depth - 1);
     const parentX = (parentOffset + 0.5) * (TREE_WIDTH / 2 ** depth);
@@ -580,14 +708,14 @@ function connectorSvg(round, path) {
       appendBranch(svg, parentX, LEVEL_Y[depth] + NODE_HEIGHT, childX, LEVEL_Y[childDepth], answer, path.has(parent) && path.has(child));
     }
   }
-  for (let parent = 7; parent < 15; parent += 1) {
-    const offset = parent - 7;
-    const parentX = (offset + 0.5) * (TREE_WIDTH / 8);
+  for (let parent = finalLevelStart; parent < NODE_COUNT; parent += 1) {
+    const offset = parent - finalLevelStart;
+    const parentX = (offset + 0.5) * (TREE_WIDTH / 2 ** (TREE_DEPTH - 1));
     for (const answer of [true, false]) {
       const leaf = offset * 2 + (answer ? 0 : 1);
       const leafX = (leaf + 0.5) * (TREE_WIDTH / LEAF_COUNT);
       const finalAnswer = round.answers.find((item) => item.nodeIndex === parent)?.answer;
-      appendBranch(svg, parentX, LEVEL_Y[3] + NODE_HEIGHT, leafX, LEAF_Y, answer, path.has(parent) && finalAnswer === answer);
+      appendBranch(svg, parentX, LEVEL_Y[TREE_DEPTH - 1] + NODE_HEIGHT, leafX, LEAF_Y, answer, path.has(parent) && finalAnswer === answer);
     }
   }
   return svg;
@@ -628,6 +756,8 @@ async function createRoom() {
           id,
           hostKey,
           hostPlayerId: null,
+          rulesVersion: GAME_RULES_VERSION,
+          scoringConfig: null,
           phase: "lobby",
           players: [],
           gamePlayerIds: [],
@@ -681,6 +811,7 @@ async function startGame() {
       requireHost(room);
       if (room.players.length < MIN_PLAYERS || room.players.length > MAX_PLAYERS) throw new Error("参加人数は2〜8名です。");
       room.players = room.players.map((player) => ({ ...player, score: 0 }));
+      room.scoringConfig = snapshotScoreConfig(SCORE_CONFIG);
       room.gamePlayerIds = room.players.map((player) => player.id);
       room.representativeIndex = 0;
       room.genreSchedule = createGenreSchedule(state.questionBank.genres.map((genre) => genre.id), MAX_PLAYERS);
@@ -702,10 +833,12 @@ function createRound(room, representativeIndex) {
     genreByDepth,
     nodes: sampleRoundNodes(state.questionBank, genreByDepth, room.usedQuestionIds),
     predictions: {},
+    representativePrediction: null,
     answers: [],
     currentNodeIndex: 0,
     reachedLeaf: null,
-    winnerIds: [],
+    allCorrectIds: [],
+    scoreBreakdowns: {},
     cancelled: false,
     createdAt: nowIso()
   };
@@ -740,7 +873,7 @@ async function confirmTree(event) {
       room.phase = "predicting";
       return room;
     });
-    state.predictionDraft = null;
+    resetRoundDrafts();
   });
 }
 
@@ -754,25 +887,80 @@ function readTreeEdits() {
   return edits;
 }
 
-function selectLeaf(leaf) {
-  state.predictionDraft = leaf;
+function selectPredictionAnswer(nodeIndex, answer) {
+  state.predictionDraft = { ...state.predictionDraft, [nodeIndex]: Boolean(answer) };
   render();
-  requestAnimationFrame(() => document.querySelector(".prediction-status")?.scrollIntoView({ behavior: "smooth", block: "nearest" }));
 }
 
 async function submitPrediction() {
-  if (state.predictionDraft == null) return;
+  if (!predictionReady(state.room.currentRound)) return;
+  const answersByNode = Object.fromEntries(
+    state.room.currentRound.nodes.map((node) => [node.index, state.predictionDraft[node.index]])
+  );
+  const confidenceDepth = state.confidenceDraft;
   await runAction(async () => {
     await state.store.update((room) => {
       requirePhase(room, "predicting");
       const round = room.currentRound;
       if (!round.eligiblePredictorIds.includes(state.playerId)) throw new Error("このラウンドでは予測できません。");
       if (round.predictions[state.playerId] != null) throw new Error("予測は確定済みです。");
-      round.predictions[state.playerId] = state.predictionDraft;
-      if (Object.keys(round.predictions).length === round.eligiblePredictorIds.length) room.phase = "answering";
+      if (Object.keys(answersByNode).length !== NODE_COUNT || Object.values(answersByNode).some((answer) => typeof answer !== "boolean")) {
+        throw new Error("7問すべてに回答してください。");
+      }
+      if (!Number.isInteger(confidenceDepth) || confidenceDepth < 0 || confidenceDepth >= TREE_DEPTH) {
+        throw new Error("自信のあるカテゴリを選んでください。");
+      }
+      round.predictions[state.playerId] = { answersByNode, confidenceDepth, submittedAt: nowIso() };
+      maybeAdvanceToAnswering(room);
       return room;
     });
   });
+}
+
+async function submitRepresentativePrediction() {
+  const roundSnapshot = state.room.currentRound;
+  if (!representativePredictionReady(roundSnapshot)) return;
+  const correctCountsByPlayerId = Object.fromEntries(
+    roundSnapshot.eligiblePredictorIds.map((playerId) => [playerId, state.representativePredictionDraft[playerId]])
+  );
+  await runAction(async () => {
+    await state.store.update((room) => {
+      requirePhase(room, "predicting");
+      const round = room.currentRound;
+      if (round.representativeId !== state.playerId) throw new Error("正解数を予想できるのは回答者だけです。");
+      if (round.representativePrediction) throw new Error("正解数の予想は確定済みです。");
+      if (round.eligiblePredictorIds.some((playerId) => {
+        const count = correctCountsByPlayerId[playerId];
+        return !Number.isInteger(count) || count < 0 || count > TREE_DEPTH;
+      })) throw new Error("全員分の正解数を0〜3で選んでください。");
+      round.representativePrediction = { correctCountsByPlayerId, submittedAt: nowIso() };
+      maybeAdvanceToAnswering(room);
+      return room;
+    });
+  });
+}
+
+function maybeAdvanceToAnswering(room) {
+  const round = room.currentRound;
+  const allPredictorsSubmitted = Object.keys(round.predictions || {}).length === round.eligiblePredictorIds.length;
+  if (allPredictorsSubmitted && round.representativePrediction) room.phase = "answering";
+}
+
+function predictionReady(round) {
+  return Boolean(
+    round
+    && round.nodes.every((node) => typeof state.predictionDraft[node.index] === "boolean")
+    && Number.isInteger(state.confidenceDraft)
+    && state.confidenceDraft >= 0
+    && state.confidenceDraft < TREE_DEPTH
+  );
+}
+
+function representativePredictionReady(round) {
+  return Boolean(round && round.eligiblePredictorIds.every((playerId) => {
+    const count = state.representativePredictionDraft[playerId];
+    return Number.isInteger(count) && count >= 0 && count <= TREE_DEPTH;
+  }));
 }
 
 async function answerQuestion(answer) {
@@ -782,11 +970,23 @@ async function answerQuestion(answer) {
       const round = room.currentRound;
       if (round.representativeId !== state.playerId) throw new Error("回答できるのは代表者だけです。");
       const nodeIndex = round.currentNodeIndex;
-      round.answers.push({ nodeIndex, answer: Boolean(answer), answeredAt: nowIso() });
+      const node = round.nodes.find((item) => item.index === nodeIndex);
+      round.answers.push({ nodeIndex, depth: node.depth, answer: Boolean(answer), answeredAt: nowIso() });
       if (round.answers.length === TREE_DEPTH) {
         round.reachedLeaf = answersToLeafIndex(round.answers.map((item) => item.answer));
-        round.winnerIds = scorePredictions(round.predictions, round.reachedLeaf);
-        room.players = room.players.map((player) => round.winnerIds.includes(player.id) ? { ...player, score: (player.score || 0) + 1 } : player);
+        const scoring = scoreRound({
+          predictions: round.predictions,
+          answers: round.answers,
+          representativeId: round.representativeId,
+          representativePrediction: round.representativePrediction,
+          scoreConfig: room.scoringConfig
+        });
+        round.allCorrectIds = scoring.allCorrectIds;
+        round.scoreBreakdowns = scoring.breakdowns;
+        room.players = room.players.map((player) => {
+          const points = scoring.breakdowns[player.id]?.total || 0;
+          return points ? { ...player, score: (player.score || 0) + points } : player;
+        });
         room.phase = "reveal";
       } else {
         round.currentNodeIndex = childNodeIndex(nodeIndex, answer);
@@ -803,7 +1003,8 @@ async function cancelRound() {
       requireHost(room);
       if (!["predicting", "answering"].includes(room.phase)) throw new Error("このフェーズでは無効終了できません。");
       room.currentRound.cancelled = true;
-      room.currentRound.winnerIds = [];
+      room.currentRound.allCorrectIds = [];
+      room.currentRound.scoreBreakdowns = {};
       room.phase = "reveal";
       return room;
     });
@@ -827,7 +1028,7 @@ async function nextRound() {
       }
       return room;
     });
-    state.predictionDraft = null;
+    resetRoundDrafts();
   });
 }
 
@@ -845,7 +1046,14 @@ async function resetGame() {
       room.players = room.players.map((player) => ({ ...player, score: 0 }));
       return room;
     });
+    resetRoundDrafts();
   });
+}
+
+function resetRoundDrafts() {
+  state.predictionDraft = {};
+  state.confidenceDraft = null;
+  state.representativePredictionDraft = {};
 }
 
 function roundLog(room) {
@@ -856,11 +1064,12 @@ function roundLog(room) {
     representativeName: playerName(round.representativeId, room),
     genreByDepth: [...round.genreByDepth],
     nodes: round.nodes.map((node) => ({ ...node })),
-    predictions: { ...round.predictions },
+    predictions: structuredClone(round.predictions),
+    representativePrediction: round.representativePrediction ? structuredClone(round.representativePrediction) : null,
     answers: round.answers.map((answer) => ({ ...answer })),
     reachedLeaf: round.reachedLeaf,
-    winnerIds: [...round.winnerIds],
-    winnerNames: round.winnerIds.map((id) => playerName(id, room)),
+    allCorrectIds: [...round.allCorrectIds],
+    scoreBreakdowns: structuredClone(round.scoreBreakdowns),
     cancelled: Boolean(round.cancelled),
     completedAt: nowIso()
   };
@@ -904,8 +1113,8 @@ async function copyInvite() {
 
 async function copyResults() {
   const lines = ["どっちーな 最終結果"];
-  const ranked = [...state.room.players].filter((player) => state.room.gamePlayerIds.includes(player.id)).sort((a, b) => b.score - a.score);
-  ranked.forEach((player, index) => lines.push(`${index + 1}位 ${player.name}: ${player.score || 0}点`));
+  const players = state.room.players.filter((player) => state.room.gamePlayerIds.includes(player.id));
+  rankedPlayers(players).forEach(({ player, rank }) => lines.push(`${rank}位 ${player.name}: ${player.score || 0}点`));
   for (const log of state.room.logs) {
     lines.push("", `Round ${log.roundNumber} 代表者: ${log.representativeName}`);
     if (log.cancelled) {
@@ -916,7 +1125,15 @@ async function copyResults() {
       const node = log.nodes.find((item) => item.index === answer.nodeIndex);
       lines.push(`Q${index + 1}: ${node?.text || "質問不明"} → ${answer.answer ? "YES" : "NO"}`);
     }
-    lines.push(`的中: ${log.winnerNames.join("、") || "なし"}`);
+    for (const playerId of [log.representativeId, ...Object.keys(log.predictions || {})]) {
+      const breakdown = log.scoreBreakdowns?.[playerId];
+      if (!breakdown) continue;
+      if (breakdown.role === "representative") {
+        lines.push(`${playerName(playerId)}（回答者）: 正解数予想 ${breakdown.representativePredictionMatches}人一致 / +${breakdown.total}点`);
+      } else {
+        lines.push(`${playerName(playerId)}: ${breakdown.correctCount}/${TREE_DEPTH}問正解 / +${breakdown.total}点`);
+      }
+    }
   }
   await copyText(lines.join("\n"));
   setNotice("結果をコピーしました。");
@@ -953,6 +1170,8 @@ function normalizeRoom(room) {
     id: source.id || "",
     hostKey: source.hostKey || "",
     hostPlayerId: source.hostPlayerId || null,
+    rulesVersion: Number(source.rulesVersion || 1),
+    scoringConfig: source.scoringConfig ? snapshotScoreConfig(source.scoringConfig) : null,
     phase: source.phase || "lobby",
     players: Array.isArray(source.players) ? source.players.map((player) => ({ ...player, score: Number(player.score || 0) })) : [],
     gamePlayerIds: Array.isArray(source.gamePlayerIds) ? source.gamePlayerIds : [],
@@ -997,7 +1216,22 @@ function isFinalRound(room) {
 }
 
 function predictorNamesAtLeaf(round, leaf) {
-  return Object.entries(round.predictions || {}).filter(([, prediction]) => prediction === leaf).map(([id]) => playerName(id));
+  return Object.entries(round.predictions || {})
+    .filter(([, prediction]) => predictionToLeafIndex(prediction) === leaf)
+    .map(([id]) => playerName(id));
+}
+
+function rankedPlayers(players) {
+  const sorted = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
+  let previousScore = null;
+  let previousRank = 0;
+  return sorted.map((player, index) => {
+    const score = player.score || 0;
+    const rank = score === previousScore ? previousRank : index + 1;
+    previousScore = score;
+    previousRank = rank;
+    return { player, rank };
+  });
 }
 
 function requireHost(room) {
