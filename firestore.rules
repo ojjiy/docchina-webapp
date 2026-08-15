@@ -1,9 +1,46 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 短命なゲームルームのみを扱うMVP向けルールです。Firebase App Checkを併用してください。
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isMember() {
+      return signedIn() && request.auth.uid in resource.data.memberUids;
+    }
+
+    function keepsProtectedFields() {
+      return request.resource.data.id == resource.data.id
+        && request.resource.data.ownerUid == resource.data.ownerUid
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.memberUids == resource.data.memberUids;
+    }
+
+    function isValidJoin() {
+      let oldPlayerCount = resource.data.players.size();
+      return signedIn()
+        && oldPlayerCount < 8
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['players', 'memberUids', 'updatedAt', 'expiresAt'])
+        && request.resource.data.memberUids == resource.data.memberUids.concat([request.auth.uid])
+        && request.resource.data.players.size() == oldPlayerCount + 1
+        && request.resource.data.players[oldPlayerCount].uid == request.auth.uid
+        && request.resource.data.players[oldPlayerCount].name is string
+        && request.resource.data.players[oldPlayerCount].name.size() > 0
+        && request.resource.data.players[oldPlayerCount].name.size() <= 20;
+    }
+
+    // 短命なゲームルームのみを扱うMVP向けルールです。App Checkも併用します。
     match /rooms/{roomId} {
-      allow read, create, update: if roomId.matches('^[A-Z2-9]{6}$');
+      allow read: if signedIn() && roomId.matches('^[A-Z2-9]{6}$');
+      allow create: if signedIn()
+        && roomId.matches('^[A-Z2-9]{6}$')
+        && request.resource.data.id == roomId
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.memberUids == [request.auth.uid]
+        && request.resource.data.players.size() == 0;
+      allow update: if roomId.matches('^[A-Z2-9]{6}$')
+        && ((isMember() && keepsProtectedFields()) || isValidJoin());
       allow delete: if false;
     }
   }

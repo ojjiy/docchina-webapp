@@ -25,28 +25,37 @@ ES Modulesと`questions.json`の読み込みにHTTPアクセスが必要なた�
 
 ```sh
 uv venv .venv
+npm install
 npm run serve
 ```
 
 ブラウザで `http://localhost:4173` を開きます。Firebase未設定時はlocalStorageモードになり、同じブラウザの複数タブで同期を確認できます。
 
+日本語の自然な折り返しには `budoux` を使用しています。GitHub PagesでもCDNへ依存せず動作するよう、公式の日本語Web Componentを `vendor/` に同梱しています。BudouXのバージョンを更新した場合は `npm run vendor:budoux` で配布ファイルを同期してください。
+
 ## テスト
 
 ```sh
-npm test
+npm run check
 ```
 
-木の経路計算、ジャンル割当、全ノード予想、各種ボーナスを含む採点、問題データなどの純粋ロジックをNode.js標準テストランナーで確認します。
+公開前のJavaScript構文と、木の経路計算、ジャンル割当、全ノード予想、各種ボーナスを含む採点、問題データなどの純粋ロジックを確認します。ロジックテストだけを実行する場合は `npm test` を使用します。
 
 ## Firebase設定
 
-1. FirebaseプロジェクトとWeb Appを作成し、Firestoreを有効にします。
-2. `firebase-config.js` の `window.DOCCHINA_FIREBASE_CONFIG` にWeb App設定を記入します。FirebaseのWeb設定値はクライアントへ配布される識別情報であり、管理者秘密鍵ではありません。
-3. `firestore.rules` をデプロイし、reCAPTCHA Enterpriseを利用するApp Checkを有効化します。
-4. App Checkの許可ドメインへローカル確認用ドメインとGitHub Pagesのドメインを追加します。
-5. FirestoreのTTLポリシーを `rooms` コレクショングループの `expiresAt` フィールドへ設定します。各ルームは最終操作から7日後を期限として保存します。
+1. FirebaseプロジェクトとWeb Appを作成し、Firestoreを本番モードで有効にします。
+2. Firebase Authenticationのログイン方法で「匿名」を有効にし、設定画面の承認済みドメインへGitHub Pagesのドメインを追加します。ローカルでFirebase接続も確認する場合は `localhost` も追加します（2025年4月28日以降に作成されたプロジェクトでは自動追加されません）。
+3. `firebase-config.js` の `window.DOCCHINA_FIREBASE_CONFIG` にWeb App設定を記入します。FirebaseのWeb設定値はクライアントへ配布される識別情報であり、管理者秘密鍵ではありません。
+4. Firebase CLIで `npx firebase-tools@latest deploy --only firestore --project your-project-id` を実行し、`firestore.rules` をデプロイします。ルールは匿名認証済みユーザーだけに読み書きを許可し、未参加ユーザーの更新を着席処理だけに制限します。
+5. reCAPTCHA Enterpriseを利用するApp Checkを有効化し、Web Appを登録して取得したサイトキーを `appCheckSiteKey` に設定します。
+6. App Checkの許可ドメインへGitHub Pagesのドメインを追加します。まず適用前のメトリクスと公開URLでのトークン発行を確認し、その後FirestoreでApp Checkの適用を有効にします。
+7. FirestoreのTTLポリシーを `rooms` コレクショングループの `expiresAt` フィールドへ設定します。各ルームは最終操作から7日後を期限として保存します。
 
-本アプリは厳密なユーザー認証を行わない、親しい参加者間のゲームを想定したMVPです。予測内容は通常UIでは名前を秘匿しますが、悪意ある参加者によるFirestoreへの直接アクセスを防ぐものではありません。
+設定後に画面下部が `ONLINE · FIRESTORE` になればオンライン同期が有効です。異なるブラウザまたは端末で同じ招待URLを開き、着席・ゲーム進行が同期することを確認してください。`LOCAL SESSION` のままの場合は、ブラウザの開発者ツールに表示されたFirebase初期化エラーと、匿名認証・許可ドメイン・設定値を確認します。
+
+App Checkをlocalhostで確認するときは、本番用reCAPTCHAの許可ドメインへlocalhostを追加せず、Firebase公式のデバッグプロバイダを使用してください。デバッグトークンは秘密情報として扱い、リポジトリへ保存しません。
+
+本アプリは匿名認証を使う、親しい参加者間のゲームを想定したMVPです。未参加ユーザーによる更新はFirestoreルールで拒否しますが、参加後のユーザーはルーム全体を更新できるため、対戦型サービス向けの厳密な不正対策を提供するものではありません。予測内容も通常UIでは名前を秘匿しますが、参加者によるFirestoreへの直接アクセスを防ぐものではありません。
 
 ## GitHub Pages
 

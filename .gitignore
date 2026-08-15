@@ -1,2 +1,6 @@
 .venv/
 .uv-cache/
+node_modules/
+.DS_Store
+.firebase/
+firebase-debug.log*

@@ -21,6 +21,7 @@ import {
 import { GAME_RULES_VERSION, SCORE_CONFIG, snapshotScoreConfig } from "./game-config.js";
 
 const FIREBASE_APP_URL = "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+const FIREBASE_AUTH_URL = "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 const FIREBASE_STORE_URL = "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 const FIREBASE_APP_CHECK_URL = "https://www.gstatic.com/firebasejs/10.12.5/firebase-app-check.js";
 const ROOM_TTL_MS = 7 * 24 * 60 * 60 * 1000;
@@ -56,6 +57,13 @@ const state = {
 
 const root = document.querySelector("#app");
 
+document.addEventListener("copy", (event) => {
+  const selectedText = window.getSelection()?.toString() || "";
+  if (!selectedText.includes("\u200b") || !event.clipboardData) return;
+  event.clipboardData.setData("text/plain", selectedText.replaceAll("\u200b", ""));
+  event.preventDefault();
+});
+
 class RoomStore {
   constructor(callbacks) {
     Object.assign(this, callbacks);
@@ -64,6 +72,7 @@ class RoomStore {
     this.room = null;
     this.db = null;
     this.fs = null;
+    this.user = null;
     this.unsubscribe = null;
     this.storageHandler = null;
   }
@@ -73,8 +82,9 @@ class RoomStore {
     if (!config?.apiKey || !config?.projectId) return this.setMode("local");
     const { appCheckSiteKey, ...firebaseConfig } = config;
     try {
-      const [{ initializeApp }, firestore, appCheck] = await Promise.all([
+      const [{ initializeApp }, auth, firestore, appCheck] = await Promise.all([
         import(FIREBASE_APP_URL),
+        import(FIREBASE_AUTH_URL),
         import(FIREBASE_STORE_URL),
         import(FIREBASE_APP_CHECK_URL)
       ]);
@@ -85,6 +95,8 @@ class RoomStore {
           isTokenAutoRefreshEnabled: true
         });
       }
+      const credential = await auth.signInAnonymously(auth.getAuth(firebaseApp));
+      this.user = credential.user;
       this.fs = firestore;
       this.db = firestore.getFirestore(firebaseApp);
       this.setMode("firebase");
@@ -98,6 +110,10 @@ class RoomStore {
   setMode(mode) {
     this.mode = mode;
     this.onMode(mode);
+  }
+
+  userId() {
+    return this.user?.uid || null;
   }
 
   async create(room) {
@@ -253,8 +269,8 @@ function appShell(content) {
       ) : null
     ),
     h("main", { id: "main-content", class: "main-content" },
-      state.error ? h("div", { class: "alert error", role: "alert" }, state.error) : null,
-      state.notice ? h("div", { class: "alert notice", role: "status" }, state.notice) : null,
+      state.error ? JapaneseText("div", { class: "alert error", role: "alert" }, state.error) : null,
+      state.notice ? JapaneseText("div", { class: "alert notice", role: "status" }, state.notice) : null,
       content
     ),
     h("footer", { class: "site-footer" },
@@ -268,21 +284,21 @@ function renderHome() {
   return h("div", { class: "home" },
     h("section", { class: "hero" },
       h("p", { class: "eyebrow" }, "A GAME OF INSIGHT AND PREDICTION"),
-      h("h1", {}, "答えの先を、", h("br"), "誰よりも深く読む。"),
-      h("p", { class: "hero-copy" }, "7つの質問を先読みし、代表者が実際にたどる3つのYes / Noを当てる。読みの深さと勝負勘を競うオンラインボードゲームです。"),
+      JapaneseText("h1", {}, "答えの先を、", h("br"), "誰よりも深く読む。"),
+      JapaneseText("p", { class: "hero-copy" }, "7つの質問を先読みし、代表者が実際にたどる3つのYes / Noを当てる。読みの深さと勝負勘を競うオンラインボードゲームです。"),
       h("div", { class: "ornament", "aria-hidden": "true" }, h("span"), h("i"), h("span"))
     ),
     h("section", { class: "entry-grid", "aria-label": "ゲームを始める" },
       h("article", { class: "entry-card featured" },
         h("span", { class: "card-number" }, "I"),
-        h("h2", {}, "新しい卓を開く"),
-        h("p", {}, "ルームを作成し、招待URLを参加者へ共有します。"),
+        JapaneseText("h2", {}, "新しい卓を開く"),
+        JapaneseText("p", {}, "ルームを作成し、招待URLを参加者へ共有します。"),
         button("ルームを作成", createRoom, "primary", { disabled: state.loading })
       ),
       h("article", { class: "entry-card" },
         h("span", { class: "card-number" }, "II"),
-        h("h2", {}, "卓へ参加する"),
-        h("p", {}, "招待された6桁のルームコードを入力してください。"),
+        JapaneseText("h2", {}, "卓へ参加する"),
+        JapaneseText("p", {}, "招待された6桁のルームコードを入力してください。"),
         h("form", { class: "join-form", onsubmit: joinRoom },
           label("ルームコード", h("input", { name: "roomId", maxlength: "6", pattern: "[A-Za-z2-9]{6}", autocomplete: "off", placeholder: "ABC234", required: true })),
           button("参加する", null, "secondary", { type: "submit" })
@@ -318,8 +334,8 @@ function renderIncompatibleRoom() {
 function renderNameRegistration() {
   return h("section", { class: "narrow-panel registration" },
     h("p", { class: "eyebrow" }, `ROOM ${state.room.id}`),
-    h("h1", {}, "お名前をお聞かせください"),
-    h("p", { class: "muted" }, "このゲーム中に表示する名前です。20文字以内で入力してください。"),
+    JapaneseText("h1", {}, "お名前をお聞かせください"),
+    JapaneseText("p", { class: "muted" }, "このゲーム中に表示する名前です。20文字以内で入力してください。"),
     h("form", { class: "stack", onsubmit: registerName },
       label("表示名", h("input", { name: "name", maxlength: "20", value: state.nameDraft, oninput: (event) => { state.nameDraft = event.currentTarget.value; }, autofocus: true, required: true, placeholder: "表示名" })),
       button("着席する", null, "primary", { type: "submit", disabled: state.loading })
@@ -387,7 +403,7 @@ function renderLobby() {
     h("div", { class: "stage-actions" },
       isHost()
         ? button(count < MIN_PLAYERS ? "2名以上で開始できます" : count > MAX_PLAYERS ? "8名まで参加できます" : "ゲームを開始", startGame, "primary large", { disabled: state.loading || count < MIN_PLAYERS || count > MAX_PLAYERS })
-        : h("p", { class: "waiting" }, "ホストがゲームを開始するまでお待ちください。")
+        : JapaneseText("p", { class: "waiting" }, "ホストがゲームを開始するまでお待ちください。")
     )
   );
 }
@@ -400,7 +416,7 @@ function renderTreeSetup() {
     h("form", { id: "tree-setup-form", onsubmit: confirmTree },
       renderTreeBoard({ editable: isHost() }),
       h("div", { class: "stage-actions sticky-actions" },
-        isHost() ? button("この質問で予測を始める", null, "primary large", { type: "submit", disabled: state.loading }) : h("p", { class: "waiting" }, "質問の確定をお待ちください。")
+        isHost() ? button("この質問で予測を始める", null, "primary large", { type: "submit", disabled: state.loading }) : JapaneseText("p", { class: "waiting" }, "質問の確定をお待ちください。")
       )
     )
   );
@@ -426,8 +442,8 @@ function renderPrediction() {
     isRepresentative && !representativeSubmitted ? renderRepresentativePredictionForm(round) : null,
     eligible && !prediction ? renderConfidencePicker(round) : null,
     h("div", { class: "prediction-status" },
-      h("p", {}, h("strong", {}, `${predictorSubmittedCount} / ${round.eligiblePredictorIds.length}`), " 名の予想者が提出済み"),
-      h("p", { class: "sub-status" }, `回答者の正解数予想：${representativeSubmitted ? "提出済み" : "未提出"}`),
+      JapaneseText("p", {}, h("strong", {}, `${predictorSubmittedCount} / ${round.eligiblePredictorIds.length}`), " 名の予想者が提出済み"),
+      JapaneseText("p", { class: "sub-status" }, `回答者の正解数予想：${representativeSubmitted ? "提出済み" : "未提出"}`),
       eligible && !prediction
         ? button(
           predictionReady(round) ? "7問の予想を確定" : "7問すべてと自信カテゴリを選んでください",
@@ -435,7 +451,7 @@ function renderPrediction() {
           "primary large",
           { disabled: !predictionReady(round) || state.loading }
         )
-        : h("p", { class: "waiting" }, isRepresentative ? "全員の提出が揃うと回答へ進みます。" : prediction ? "予想は確定済みです。" : "次のラウンドから予想へ参加できます。")
+        : JapaneseText("p", { class: "waiting" }, isRepresentative ? "全員の提出が揃うと回答へ進みます。" : prediction ? "予想は確定済みです。" : "次のラウンドから予想へ参加できます。")
     ),
     isHost() ? h("div", { class: "danger-zone" }, button("このラウンドを無効終了", cancelRound, "danger compact")) : null
   );
@@ -443,7 +459,7 @@ function renderPrediction() {
 
 function renderRepresentativePredictionForm(round) {
   return h("section", { class: "representative-prediction" },
-    h("header", {}, h("p", { class: "eyebrow" }, "ANSWERER'S FORECAST"), h("h2", {}, "参加者ごとの正解数予想"), h("p", {}, "実経路3問のうち何問を当てるか、0〜3で選びます。")),
+    h("header", {}, h("p", { class: "eyebrow" }, "ANSWERER'S FORECAST"), JapaneseText("h2", {}, "参加者ごとの正解数予想"), JapaneseText("p", {}, "実経路3問のうち何問を当てるか、0〜3で選びます。")),
     h("div", { class: "count-prediction-grid" }, ...round.eligiblePredictorIds.map((playerId) => {
       const selected = state.representativePredictionDraft[playerId];
       return h("label", { class: "count-prediction-row" },
@@ -470,7 +486,7 @@ function renderRepresentativePredictionForm(round) {
 
 function renderConfidencePicker(round) {
   return h("section", { class: "confidence-picker" },
-    h("div", {}, h("p", { class: "eyebrow" }, "CONFIDENCE MARKER"), h("h2", {}, "自信のあるカテゴリを一つ選ぶ"), h("p", {}, `選んだカテゴリの実経路問題に正解すると +${state.room.scoringConfig.confidenceCorrectBonus}点です。`)),
+    h("div", {}, h("p", { class: "eyebrow" }, "CONFIDENCE MARKER"), JapaneseText("h2", {}, "自信のあるカテゴリを一つ選ぶ"), JapaneseText("p", {}, `選んだカテゴリの実経路問題に正解すると +${state.room.scoringConfig.confidenceCorrectBonus}点です。`)),
     h("div", { class: "confidence-options" }, ...round.genreByDepth.map((genreId, depth) => {
       const genre = state.questionBank.genres.find((item) => item.id === genreId);
       const selected = state.confidenceDraft === depth;
@@ -490,11 +506,11 @@ function renderAnswering() {
     stageHeader(`ROUND ${round.roundNumber} · ANSWER`, `${playerName(round.representativeId)}さんの回答`, `${round.answers.length + 1}問目 / ${TREE_DEPTH}問`),
     h("section", { class: "answer-card" },
       h("p", { class: "genre-chip" }, node.genreLabel),
-      h("h2", {}, node.text),
+      JapaneseText("h2", {}, node.text),
       renderCurrentPredictionPeek(round, node),
       isRepresentative
         ? h("div", { class: "answer-actions" }, button("YES", () => answerQuestion(true), "answer yes", { disabled: state.loading }), button("NO", () => answerQuestion(false), "answer no", { disabled: state.loading }))
-        : h("p", { class: "waiting" }, "代表者が回答しています。")
+        : JapaneseText("p", { class: "waiting" }, "代表者が回答しています。")
     ),
     renderTreeBoard(),
     isHost() ? h("div", { class: "danger-zone" }, button("このラウンドを無効終了", cancelRound, "danger compact")) : null
@@ -521,7 +537,7 @@ function renderPredictionAnswerGroup(labelText, playerIds, answerClass) {
     h("header", {}, h("strong", {}, labelText), h("span", {}, `${playerIds.length}人`)),
     playerIds.length
       ? h("ul", {}, ...playerIds.map((playerId) => h("li", {}, playerName(playerId))))
-      : h("p", {}, "該当者なし")
+      : JapaneseText("p", {}, "該当者なし")
   );
 }
 
@@ -532,14 +548,14 @@ function renderReveal() {
     stageHeader(`ROUND ${round.roundNumber} · RESULT`, canceled ? "このラウンドは無効になりました" : "結果発表", canceled ? "得点を加算せず、次の代表者へ進みます。" : "予測結果を公開します。"),
     !canceled ? renderRoundScores(round) : null,
     renderTreeBoard({ revealNames: true }),
-    h("div", { class: "stage-actions" }, isHost() ? button(isFinalRound(state.room) ? "最終結果を見る" : "次のラウンドへ", nextRound, "primary large", { disabled: state.loading }) : h("p", { class: "waiting" }, "ホストの進行をお待ちください。"))
+    h("div", { class: "stage-actions" }, isHost() ? button(isFinalRound(state.room) ? "最終結果を見る" : "次のラウンドへ", nextRound, "primary large", { disabled: state.loading }) : JapaneseText("p", { class: "waiting" }, "ホストの進行をお待ちください。"))
   );
 }
 
 function renderRoundScores(round) {
   const orderedIds = [round.representativeId, ...round.eligiblePredictorIds];
   return h("section", { class: "round-scores" },
-    h("header", {}, h("p", { class: "celebration-label" }, "ROUND SCORE"), h("h2", {}, "得点内訳")),
+    h("header", {}, h("p", { class: "celebration-label" }, "ROUND SCORE"), JapaneseText("h2", {}, "得点内訳")),
     h("div", { class: "round-score-grid" }, ...orderedIds.map((playerId) => renderRoundScoreCard(playerId, round.scoreBreakdowns?.[playerId])))
   );
 }
@@ -557,7 +573,7 @@ function renderRoundScoreCard(playerId, breakdown) {
       breakdown.minorityCorrectBonus ? `少数正解 +${breakdown.minorityCorrectBonus}` : null
     ].filter(Boolean);
   return h("article", { class: `round-score-card ${breakdown.role}` },
-    h("div", {}, h("small", {}, breakdown.role === "representative" ? "回答者" : "予想者"), h("h3", {}, playerName(playerId))),
+    h("div", {}, h("small", {}, breakdown.role === "representative" ? "回答者" : "予想者"), JapaneseText("h3", {}, playerName(playerId))),
     h("ul", {}, ...details.map((detail) => h("li", {}, detail))),
     h("strong", {}, `+${breakdown.total} pt`)
   );
@@ -570,7 +586,7 @@ function renderGameOver() {
     renderRanking(players),
     renderScoreMatrix(players, state.room.logs),
     h("section", { class: "answer-history" },
-      h("header", {}, h("p", { class: "eyebrow" }, "ANSWER ARCHIVE"), h("h2", {}, "代表者ごとの回答")),
+      h("header", {}, h("p", { class: "eyebrow" }, "ANSWER ARCHIVE"), JapaneseText("h2", {}, "代表者ごとの回答")),
       h("div", { class: "answer-history-grid" }, ...state.room.logs.map(renderAnswerHistory))
     ),
     h("div", { class: "stage-actions" },
@@ -591,7 +607,7 @@ function renderRanking(players) {
 
 function renderScoreMatrix(players, logs) {
   return h("section", { class: "matrix-section" },
-    h("header", {}, h("p", { class: "eyebrow" }, "PREDICTION MATRIX"), h("h2", {}, "予測結果一覧"), h("p", {}, "縦軸が予測者、横軸が代表者です。")),
+    h("header", {}, h("p", { class: "eyebrow" }, "PREDICTION MATRIX"), JapaneseText("h2", {}, "予測結果一覧"), JapaneseText("p", {}, "縦軸が予測者、横軸が代表者です。")),
     h("div", { class: "matrix-scroll", tabindex: "0", "aria-label": "予測結果マトリクス。横方向にスクロールできます。" },
       h("table", { class: "score-matrix" },
         h("thead", {}, h("tr", {},
@@ -631,13 +647,13 @@ function renderMatrixCell(log, representative, predictor) {
 
 function renderAnswerHistory(log) {
   return h("article", { class: "answer-history-card" },
-    h("header", {}, h("small", {}, `ROUND ${log.roundNumber}`), h("h3", {}, log.representativeName), log.cancelled ? h("span", { class: "canceled-label" }, "無効") : null),
+    h("header", {}, h("small", {}, `ROUND ${log.roundNumber}`), JapaneseText("h3", {}, log.representativeName), log.cancelled ? h("span", { class: "canceled-label" }, "無効") : null),
     log.answers.length
       ? h("ol", {}, ...log.answers.map((answer, index) => {
         const node = log.nodes.find((item) => item.index === answer.nodeIndex);
-        return h("li", {}, h("span", { class: "answer-question" }, h("small", {}, `Q${index + 1}`), node?.text || "質問を確認できません"), h("strong", { class: answer.answer ? "answer-yes" : "answer-no" }, answer.answer ? "YES" : "NO"));
+        return h("li", {}, h("span", { class: "answer-question" }, h("small", {}, `Q${index + 1}`), BudouXText(node?.text || "質問を確認できません")), h("strong", { class: answer.answer ? "answer-yes" : "answer-no" }, answer.answer ? "YES" : "NO"));
       }))
-      : h("p", { class: "muted" }, "回答なし")
+      : JapaneseText("p", { class: "muted answer-history-empty" }, "回答なし")
   );
 }
 
@@ -676,7 +692,7 @@ function renderTreeBoard(options = {}) {
       h("div", { class: "node-meta" }, h("span", {}, node.genreLabel), h("small", {}, `Q${node.index + 1}`)),
       options.editable
         ? h("textarea", { name: `node-${node.index}`, maxlength: "90", required: true, "aria-label": `質問${node.index + 1}` }, node.text)
-        : h("p", {}, node.text),
+        : JapaneseText("p", {}, node.text),
       options.editable ? button("引き直す", () => rerollQuestion(node.index), "node-reroll", { type: "button", disabled: state.loading }) : null,
       options.predictionEditor ? h("div", { class: "node-prediction-controls", "aria-label": `質問${node.index + 1}の予想` },
         button("YES", () => selectPredictionAnswer(node.index, true), predictedAnswer === true ? "node-answer yes selected" : "node-answer yes", { "aria-pressed": String(predictedAnswer === true) }),
@@ -779,12 +795,15 @@ async function createRoom() {
       const id = randomRoomId();
       const hostKey = randomId();
       try {
+        const ownerUid = state.store.userId();
         state.roomId = id;
         state.hostKey = hostKey;
         sessionStorage.setItem(hostKeyName(id), hostKey);
         await state.store.create({
           id,
           hostKey,
+          ownerUid: ownerUid || "",
+          memberUids: ownerUid ? [ownerUid] : [],
           hostPlayerId: null,
           rulesVersion: GAME_RULES_VERSION,
           scoringConfig: null,
@@ -822,11 +841,15 @@ async function registerName(event) {
   const name = String(new FormData(event.currentTarget).get("name") || "").trim();
   if (!name) return setError("表示名を入力してください。");
   const playerId = randomId();
+  const uid = state.store.userId();
   await runAction(async () => {
     await state.store.update((room) => {
       if (room.players.length >= MAX_PLAYERS) throw new Error("このルームは8名で満席です。");
-      room.players.push({ id: playerId, name, score: 0, joinedAt: nowIso(), lastSeenAt: nowIso() });
-      if (!room.hostPlayerId && state.hostKey && state.hostKey === room.hostKey) room.hostPlayerId = playerId;
+      room.players.push({ id: playerId, uid: uid || "", name, score: 0, joinedAt: nowIso(), lastSeenAt: nowIso() });
+      if (uid && !room.memberUids.includes(uid)) room.memberUids.push(uid);
+      const ownsOnlineRoom = uid && room.ownerUid === uid;
+      const ownsLocalRoom = !uid && state.hostKey && state.hostKey === room.hostKey;
+      if (!room.hostPlayerId && (ownsOnlineRoom || ownsLocalRoom)) room.hostPlayerId = playerId;
       return room;
     });
     state.playerId = playerId;
@@ -1199,6 +1222,8 @@ function normalizeRoom(room) {
   return {
     id: source.id || "",
     hostKey: source.hostKey || "",
+    ownerUid: source.ownerUid || "",
+    memberUids: Array.isArray(source.memberUids) ? source.memberUids : [],
     hostPlayerId: source.hostPlayerId || null,
     rulesVersion: Number(source.rulesVersion || 1),
     scoringConfig: source.scoringConfig ? snapshotScoreConfig(source.scoringConfig) : null,
@@ -1206,7 +1231,7 @@ function normalizeRoom(room) {
     players: Array.isArray(source.players) ? source.players.map((player) => ({ ...player, score: Number(player.score || 0) })) : [],
     gamePlayerIds: Array.isArray(source.gamePlayerIds) ? source.gamePlayerIds : [],
     representativeIndex: Number(source.representativeIndex || 0),
-    genreSchedule: Array.isArray(source.genreSchedule) ? source.genreSchedule : [],
+    genreSchedule: normalizeGenreSchedule(source.genreSchedule),
     usedQuestionIds: Array.isArray(source.usedQuestionIds) ? source.usedQuestionIds : [],
     currentRound: source.currentRound || null,
     logs: Array.isArray(source.logs) ? source.logs : [],
@@ -1216,8 +1241,23 @@ function normalizeRoom(room) {
   };
 }
 
+function normalizeGenreSchedule(schedule) {
+  if (!Array.isArray(schedule)) return [];
+  return schedule.map((entry) => {
+    if (Array.isArray(entry)) return [...entry];
+    if (Array.isArray(entry?.genreByDepth)) return [...entry.genreByDepth];
+    return [];
+  });
+}
+
 function toFirestoreRoom(room, firestore) {
-  return { ...room, expiresAt: firestore.Timestamp.fromDate(new Date(room.expiresAt)) };
+  const { hostKey: _localHostKey, ...onlineRoom } = room;
+  return {
+    ...onlineRoom,
+    // Firestore does not support an array directly containing another array.
+    genreSchedule: normalizeGenreSchedule(room.genreSchedule).map((genreByDepth) => ({ genreByDepth })),
+    expiresAt: firestore.Timestamp.fromDate(new Date(room.expiresAt))
+  };
 }
 
 function currentPlayer() {
@@ -1322,6 +1362,14 @@ function h(tag, attrs = {}, ...children) {
   return element;
 }
 
+function BudouXText(...children) {
+  return h("budoux-ja", {}, ...children);
+}
+
+function JapaneseText(tag, attrs = {}, ...children) {
+  return h(tag, attrs, BudouXText(...children));
+}
+
 function button(text, onclick, variant = "primary", attrs = {}) {
   return h("button", { class: `button ${variant}`, type: attrs.type || "button", onclick, ...attrs }, text);
 }
@@ -1331,23 +1379,23 @@ function label(text, control) {
 }
 
 function step(number, title, copy) {
-  return h("article", {}, h("span", {}, number), h("div", {}, h("h3", {}, title), h("p", {}, copy)));
+  return h("article", {}, h("span", {}, number), h("div", {}, JapaneseText("h3", {}, title), JapaneseText("p", {}, copy)));
 }
 
 function ruleCard(number, title, copy) {
-  return h("article", { class: "rule-card" }, h("strong", {}, number), h("div", {}, h("h3", {}, title), h("p", {}, copy)));
+  return h("article", { class: "rule-card" }, h("strong", {}, number), h("div", {}, JapaneseText("h3", {}, title), JapaneseText("p", {}, copy)));
 }
 
 function stageHeader(eyebrow, title, copy) {
-  return h("header", { class: "stage-header" }, h("p", { class: "eyebrow" }, eyebrow), h("h1", {}, title), h("p", {}, copy));
+  return h("header", { class: "stage-header" }, h("p", { class: "eyebrow" }, eyebrow), JapaneseText("h1", {}, title), JapaneseText("p", {}, copy));
 }
 
 function messagePanel(title, message, kind, action = null) {
-  return h("section", { class: `narrow-panel message ${kind}` }, h("h1", {}, title), h("p", {}, message), action);
+  return h("section", { class: `narrow-panel message ${kind}` }, JapaneseText("h1", {}, title), JapaneseText("p", {}, message), action);
 }
 
 function loadingPanel(message) {
-  return h("section", { class: "loading-panel" }, h("span", { class: "loading-mark", "aria-hidden": "true" }), h("p", {}, message));
+  return h("section", { class: "loading-panel" }, h("span", { class: "loading-mark", "aria-hidden": "true" }), JapaneseText("p", {}, message));
 }
 
 function captureFocus() {

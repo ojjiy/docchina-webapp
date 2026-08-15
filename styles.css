@@ -55,6 +55,7 @@ button, input, textarea { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button { color: inherit; }
 a { color: inherit; }
+budoux-ja { display: inline; }
 
 :focus-visible {
   outline: 2px solid var(--gold-300);
@@ -522,6 +523,7 @@ button.tree-leaf:hover { border-color: var(--gold-300); background: var(--navy-7
 .answer-history-card li > strong { padding: 8px 5px; border: 1px solid; text-align: center; font: 700 15px/1 var(--sans); letter-spacing: 0.05em; }
 .answer-history-card .answer-yes { color: var(--branch-yes-bright); border-color: var(--branch-yes); background: rgba(49, 95, 75, 0.13); }
 .answer-history-card .answer-no { color: var(--branch-no-bright); border-color: var(--branch-no); background: rgba(116, 63, 67, 0.12); }
+.answer-history-empty { min-height: 74px; margin: 0; padding: 13px 16px; display: flex; align-items: center; }
 
 @media (max-width: 900px) {
   .main-content { padding-top: 24px; }
