@@ -144,6 +144,16 @@ export function predictionCounts(predictions) {
   return counts;
 }
 
+export function predictionAnswerGroups(predictions, nodeIndex) {
+  const groups = { yesPlayerIds: [], noPlayerIds: [] };
+  for (const [playerId, prediction] of Object.entries(predictions || {})) {
+    const answer = prediction?.answersByNode?.[nodeIndex];
+    if (answer === true) groups.yesPlayerIds.push(playerId);
+    if (answer === false) groups.noPlayerIds.push(playerId);
+  }
+  return groups;
+}
+
 export function scoreRound({ predictions, answers, representativeId, representativePrediction, scoreConfig }) {
   const predictorEntries = Object.entries(predictions || {});
   const pathAnswers = Array.isArray(answers) ? answers : [];

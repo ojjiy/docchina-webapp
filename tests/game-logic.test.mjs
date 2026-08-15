@@ -7,6 +7,7 @@ import {
   createGenreSchedule,
   getPathNodeIndices,
   nodeDepth,
+  predictionAnswerGroups,
   predictionCounts,
   predictionToLeafIndex,
   scoreRound,
@@ -55,6 +56,14 @@ test("全ノード予想から従来の予想到達点を導出して集計す�
   const counts = predictionCounts(predictions);
   assert.equal(counts[2], 2);
   assert.equal(counts[7], 1);
+  assert.deepEqual(predictionAnswerGroups(predictions, 0), {
+    yesPlayerIds: ["a", "b"],
+    noPlayerIds: ["c"]
+  });
+  assert.deepEqual(predictionAnswerGroups(predictions, 2), {
+    yesPlayerIds: ["a"],
+    noPlayerIds: ["b", "c"]
+  });
 });
 
 test("質問点・全問一致・自信・単独正解を質問ごとに採点する", () => {

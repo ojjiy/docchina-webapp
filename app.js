@@ -10,6 +10,7 @@ import {
   createGenreSchedule,
   getPathNodeIndices,
   nodeDepth,
+  predictionAnswerGroups,
   predictionCounts,
   predictionToLeafIndex,
   rerollNode,
@@ -30,6 +31,7 @@ const NODE_HEIGHT = 212;
 const LEVEL_Y = [24, 282, 540];
 const LEAF_Y = 804;
 const TREE_HEIGHT = 934;
+const PLAYER_MARKS = ["●", "▲", "■", "◆", "★", "✦", "⬟", "✚"];
 
 const state = {
   roomId: roomIdFromUrl(),
@@ -348,10 +350,10 @@ function renderPlayers() {
   const room = state.room;
   const activeIds = new Set(room.gamePlayerIds || []);
   return h("ol", { class: "player-list" },
-    ...room.players.map((player, index) => {
+    ...room.players.map((player) => {
       const isRepresentative = room.currentRound?.representativeId === player.id && room.phase !== "gameOver";
       return h("li", { class: `player ${player.id === state.playerId ? "self" : ""} ${isRepresentative ? "representative" : ""}` },
-        h("span", { class: "player-index" }, String(index + 1).padStart(2, "0")),
+        renderPlayerMark(player.id, { decorative: true }),
         h("span", { class: "player-info" },
           h("strong", {}, player.name, player.id === room.hostPlayerId ? h("small", {}, " HOST") : null),
           h("small", {}, activeIds.size && !activeIds.has(player.id) ? "次ラウンドから参加" : isRepresentative ? "代表者" : "参加者")
@@ -489,12 +491,37 @@ function renderAnswering() {
     h("section", { class: "answer-card" },
       h("p", { class: "genre-chip" }, node.genreLabel),
       h("h2", {}, node.text),
+      renderCurrentPredictionPeek(round, node),
       isRepresentative
         ? h("div", { class: "answer-actions" }, button("YES", () => answerQuestion(true), "answer yes", { disabled: state.loading }), button("NO", () => answerQuestion(false), "answer no", { disabled: state.loading }))
         : h("p", { class: "waiting" }, "代表者が回答しています。")
     ),
     renderTreeBoard(),
     isHost() ? h("div", { class: "danger-zone" }, button("このラウンドを無効終了", cancelRound, "danger compact")) : null
+  );
+}
+
+function renderCurrentPredictionPeek(round, node) {
+  const { yesPlayerIds, noPlayerIds } = predictionAnswerGroups(round.predictions, node.index);
+  const tooltipId = `current-predictions-${round.roundNumber}-${node.index}`;
+  return h("div", { class: "current-prediction-peek" },
+    button("みんなの予想", null, "prediction-peek-trigger", {
+      "aria-describedby": tooltipId,
+      "aria-label": `質問${node.index + 1}のみんなの予想を見る`
+    }),
+    h("div", { id: tooltipId, class: "current-prediction-tooltip", role: "tooltip" },
+      renderPredictionAnswerGroup("YES", yesPlayerIds, "yes"),
+      renderPredictionAnswerGroup("NO", noPlayerIds, "no")
+    )
+  );
+}
+
+function renderPredictionAnswerGroup(labelText, playerIds, answerClass) {
+  return h("section", { class: `prediction-answer-group ${answerClass}` },
+    h("header", {}, h("strong", {}, labelText), h("span", {}, `${playerIds.length}人`)),
+    playerIds.length
+      ? h("ul", {}, ...playerIds.map((playerId) => h("li", {}, playerName(playerId))))
+      : h("p", {}, "該当者なし")
   );
 }
 
@@ -625,6 +652,7 @@ function renderTreeBoard(options = {}) {
     confidenceDepth: state.confidenceDraft
   };
   const displayedPredictionLeaf = predictionToLeafIndex(displayedPrediction);
+  const revealPredictions = state.room.phase === "reveal";
   if (state.room.phase === "answering" && round.currentNodeIndex != null) path.add(round.currentNodeIndex);
   const container = h("div", {
     class: "tree-scroll",
@@ -655,7 +683,7 @@ function renderTreeBoard(options = {}) {
         button("NO", () => selectPredictionAnswer(node.index, false), predictedAnswer === false ? "node-answer no selected" : "node-answer no", { "aria-pressed": String(predictedAnswer === false) })
       ) : null,
       options.showOwnPrediction && ownSubmittedPrediction ? h("div", { class: `submitted-node-answer ${predictedAnswer ? "yes" : "no"}` }, `あなたの予想 ${predictedAnswer ? "YES" : "NO"}`) : null,
-      state.room.phase === "reveal" && typeof actualAnswer === "boolean" ? h("div", { class: `actual-node-answer ${actualAnswer ? "yes" : "no"}` }, `実際 ${actualAnswer ? "YES" : "NO"}`) : null
+      state.room.phase === "reveal" && typeof actualAnswer === "boolean" ? renderPathPredictionVotes(round, node) : null
     );
     canvas.append(card);
   }
@@ -664,12 +692,12 @@ function renderTreeBoard(options = {}) {
     const x = (leaf + 0.5) * (TREE_WIDTH / LEAF_COUNT);
     const selected = displayedPredictionLeaf === leaf;
     const reached = round.reachedLeaf === leaf;
-    const names = options.revealNames ? predictorNamesAtLeaf(round, leaf) : [];
+    const names = revealPredictions && options.revealNames ? predictorNamesAtLeaf(round, leaf) : [];
     const tooltipId = `leaf-voters-${round.roundNumber}-${leaf}`;
     const leafContent = [
       h("small", {}, "DEST."),
       h("strong", {}, String(leaf + 1).padStart(2, "0")),
-      h("span", { class: "prediction-count" }, `${counts[leaf]}票`),
+      revealPredictions ? h("span", { class: "prediction-count" }, `${counts[leaf]}票`) : null,
       names.length ? h("span", { class: "voter-hint" }, "投票者") : null,
       names.length ? h("span", { id: tooltipId, class: "leaf-voter-tooltip", role: "tooltip" },
         h("small", {}, "VOTERS"),
@@ -682,7 +710,9 @@ function renderTreeBoard(options = {}) {
       title: names.length ? names.join("、") : `到達点 ${leaf + 1}`,
       tabindex: names.length ? "0" : null,
       "aria-describedby": names.length ? tooltipId : null,
-      "aria-label": names.length ? `到達点 ${leaf + 1}、${counts[leaf]}票。投票者は${names.join("、")}` : `到達点 ${leaf + 1}、${counts[leaf]}票`
+      "aria-label": revealPredictions
+        ? names.length ? `到達点 ${leaf + 1}、${counts[leaf]}票。投票者は${names.join("、")}` : `到達点 ${leaf + 1}、${counts[leaf]}票`
+        : `到達点 ${leaf + 1}。票数は結果発表まで非公開`
     };
     canvas.append(h("div", attrs, ...leafContent));
   }
@@ -1208,6 +1238,38 @@ function ownPrediction(room) {
 
 function playerName(playerId, room = state.room) {
   return room?.players.find((player) => player.id === playerId)?.name || "不明な参加者";
+}
+
+function renderPlayerMark(playerId, options = {}) {
+  const playerIndex = Math.max(0, state.room?.players.findIndex((player) => player.id === playerId) ?? 0);
+  const name = playerName(playerId);
+  const decorative = Boolean(options.decorative);
+  return h("span", {
+    class: `player-mark player-mark-${playerIndex % PLAYER_MARKS.length}`,
+    title: decorative ? null : name,
+    tabindex: decorative ? null : "0",
+    "data-player-name": decorative ? null : name,
+    "aria-hidden": decorative ? "true" : null,
+    "aria-label": decorative ? null : name
+  }, PLAYER_MARKS[playerIndex % PLAYER_MARKS.length]);
+}
+
+function renderPathPredictionVotes(round, node) {
+  const { yesPlayerIds, noPlayerIds } = predictionAnswerGroups(round.predictions, node.index);
+  const group = (labelText, playerIds, answerClass) => h("div", { class: `path-prediction-group ${answerClass}` },
+    h("strong", {}, labelText),
+    h("span", { class: "path-prediction-marks" },
+      playerIds.length
+        ? playerIds.map((playerId) => renderPlayerMark(playerId))
+        : h("span", { class: "path-prediction-empty", "aria-label": "該当者なし" }, "—")
+    )
+  );
+  const yesNames = yesPlayerIds.map((playerId) => playerName(playerId)).join("、") || "なし";
+  const noNames = noPlayerIds.map((playerId) => playerName(playerId)).join("、") || "なし";
+  return h("div", {
+    class: "path-prediction-votes",
+    "aria-label": `みんなの予想。YES：${yesNames}。NO：${noNames}`
+  }, group("YES", yesPlayerIds, "yes"), group("NO", noPlayerIds, "no"));
 }
 
 function isFinalRound(room) {
