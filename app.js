@@ -169,14 +169,13 @@ class RoomStore {
     this.storageHandler = null;
   }
 
-  applyMutation(current, mutator) {
+  applyMutation(current, mutator, { allowRejoin = false } = {}) {
     const actor = current.players.find((player) => player.id === state.playerId);
-    const kickedUid = this.userId() && current.players.some((player) => player.uid === this.userId() && player.kickedAt);
-    if (actor?.kickedAt || kickedUid) throw new Error("このルームからkickされています。");
+    if (actor?.kickedAt && !allowRejoin) throw new Error("このルームからkickされています。");
     return mutator(structuredClone(current));
   }
 
-  async update(mutator) {
+  async update(mutator, options = {}) {
     if (!this.roomId) throw new Error("ルームが選択されていません。");
     if (this.mode === "firebase") {
       const ref = this.fs.doc(this.db, "rooms", this.roomId);
@@ -184,7 +183,7 @@ class RoomStore {
         const snapshot = await transaction.get(ref);
         if (!snapshot.exists()) throw new Error("ルームが見つかりません。");
         const current = normalizeRoom(snapshot.data());
-        const next = this.applyMutation(current, mutator);
+        const next = this.applyMutation(current, mutator, options);
         if (!next) return;
         next.updatedAt = nowIso();
         next.expiresAt = expirationIso();
@@ -194,7 +193,7 @@ class RoomStore {
     }
     const current = readLocalRoom(this.roomId);
     if (!current) throw new Error("ルームが見つかりません。");
-    const next = this.applyMutation(current, mutator);
+    const next = this.applyMutation(current, mutator, options);
     if (!next) return;
     next.updatedAt = nowIso();
     next.expiresAt = expirationIso();
@@ -268,7 +267,7 @@ function renderContent() {
   if (!state.room) return loadingPanel("ルームを読み込んでいます");
   if (state.room.rulesVersion !== GAME_RULES_VERSION) return renderIncompatibleRoom();
   const kicked = state.room.players.some((player) => player.kickedAt && (player.id === state.playerId || (state.store.userId() && player.uid === state.store.userId())));
-  if (kicked) return messagePanel("ルームから退出しました", "他の参加者によりkickされました。", "empty", h("a", { class: "button primary", href: baseUrl() }, "ホームへ戻る"));
+  if (kicked && !currentPlayer()) return renderNameRegistration(true);
   if (!currentPlayer()) return renderNameRegistration();
   return renderRoom();
 }
@@ -347,14 +346,14 @@ function renderIncompatibleRoom() {
   );
 }
 
-function renderNameRegistration() {
+function renderNameRegistration(rejoining = false) {
   return h("section", { class: "narrow-panel registration" },
     h("p", { class: "eyebrow" }, `ROOM ${state.room.id}`),
-    JapaneseText("h1", {}, "お名前をお聞かせください"),
-    JapaneseText("p", { class: "muted" }, "このゲーム中に表示する名前です。20文字以内で入力してください。"),
+    JapaneseText("h1", {}, rejoining ? "ルームへ再参加する" : "お名前をお聞かせください"),
+    JapaneseText("p", { class: "muted" }, rejoining ? "他の参加者により退出しました。名前を入力すると、新しい参加者として0点から再参加できます。以前の得点と結果は履歴に残ります。" : "このゲーム中に表示する名前です。20文字以内で入力してください。"),
     h("form", { class: "stack", onsubmit: registerName },
       label("表示名", h("input", { name: "name", maxlength: "20", value: state.nameDraft, oninput: (event) => { state.nameDraft = event.currentTarget.value; }, autofocus: true, required: true, placeholder: "表示名" })),
-      button("着席する", null, "primary", { type: "submit", disabled: state.loading })
+      button(rejoining ? "再参加する" : "着席する", null, "primary", { type: "submit", disabled: state.loading })
     )
   );
 }
@@ -870,7 +869,7 @@ async function registerName(event) {
       const ownsLocalRoom = !uid && state.hostKey && state.hostKey === room.hostKey;
       if (!room.hostPlayerId && (ownsOnlineRoom || ownsLocalRoom)) room.hostPlayerId = playerId;
       return room;
-    });
+    }, { allowRejoin: true });
     state.playerId = playerId;
     sessionStorage.setItem(playerKey(state.room.id), playerId);
     state.nameDraft = "";
