@@ -2,179 +2,2770 @@
   "version": 1,
   "genres": [
     {
-      "id": "food",
-      "label": "食",
+      "id": "positive-choice",
+      "label": "究極の二択（どちらも嬉しい）",
+      "answerType": "binary-choice",
+      "description": "魅力的な二案から、本人がより選びたい側を言い切る自己記述文",
       "questions": [
-        { "id": "food-01", "text": "朝食は毎日食べますか？" },
-        { "id": "food-02", "text": "辛い料理は好きですか？" },
-        { "id": "food-03", "text": "外食では新しい料理を選ぶことが多いですか？" },
-        { "id": "food-04", "text": "甘いものを毎週食べますか？" },
-        { "id": "food-05", "text": "料理をすることは好きですか？" },
-        { "id": "food-06", "text": "行列に並んででも食べたい店がありますか？" },
-        { "id": "food-07", "text": "食事では量より質を重視しますか？" },
-        { "id": "food-08", "text": "苦手な食べ物を克服した経験がありますか？" },
-        { "id": "food-09", "text": "旅行先の食事を事前に調べますか？" },
-        { "id": "food-10", "text": "同じ昼食を続けて食べても平気ですか？" },
-        { "id": "food-11", "text": "飲み物は温かいものを選ぶことが多いですか？" },
-        { "id": "food-12", "text": "高級料理より家庭料理に魅力を感じますか？" },
-        { "id": "food-13", "text": "賞味期限を少し過ぎても自分で判断して食べますか？" },
-        { "id": "food-14", "text": "食器や盛り付けを大切にしますか？" },
-        { "id": "food-15", "text": "一人で飲食店に入ることに抵抗はありませんか？" },
-        { "id": "food-16", "text": "最後の一口を人に譲ることが多いですか？" }
+        {
+          "id": "positive-choice-01",
+          "text": "一年間無料になるなら、外食代より旅行の交通費を選びたい。",
+          "yesLabel": "旅行の交通費",
+          "noLabel": "外食代",
+          "theme": "travel"
+        },
+        {
+          "id": "positive-choice-02",
+          "text": "毎週増えるなら、自由に使える一万円より自由な休日一日を選びたい。",
+          "yesLabel": "自由な休日一日",
+          "noLabel": "自由に使える一万円",
+          "theme": "values"
+        },
+        {
+          "id": "positive-choice-03",
+          "text": "身につくなら、どんな楽器も演奏できる力より、どんな料理もおいしく作れる力を選びたい。",
+          "yesLabel": "料理の力",
+          "noLabel": "楽器の力",
+          "theme": "hobby"
+        },
+        {
+          "id": "positive-choice-04",
+          "text": "家に一つ追加できるなら、高性能なホームシアターより大きな本棚を選びたい。",
+          "yesLabel": "大きな本棚",
+          "noLabel": "ホームシアター",
+          "theme": "entertainment"
+        },
+        {
+          "id": "positive-choice-05",
+          "text": "毎朝届くなら、季節の果物より焼きたてのパンを選びたい。",
+          "yesLabel": "焼きたてのパン",
+          "noLabel": "季節の果物",
+          "theme": "food"
+        },
+        {
+          "id": "positive-choice-06",
+          "text": "旅の特典としてもらうなら、乗り放題の交通券より、どこでも使える宿泊券を選びたい。",
+          "yesLabel": "宿泊券",
+          "noLabel": "交通券",
+          "theme": "travel"
+        },
+        {
+          "id": "positive-choice-07",
+          "text": "一日だけ達人になれるなら、絵を描くことより写真撮影を選びたい。",
+          "yesLabel": "写真撮影",
+          "noLabel": "絵を描くこと",
+          "theme": "hobby"
+        },
+        {
+          "id": "positive-choice-08",
+          "text": "理想の休日をもらえるなら、好きな人たちが全員集まる一日より、誰にも邪魔されない一日を選びたい。",
+          "yesLabel": "一人で過ごす一日",
+          "noLabel": "みんなで過ごす一日",
+          "theme": "relationships"
+        },
+        {
+          "id": "positive-choice-09",
+          "text": "仕事や勉強で得られるなら、記憶力が二倍になる力より、集中力が二倍になる力を選びたい。",
+          "yesLabel": "集中力",
+          "noLabel": "記憶力",
+          "theme": "work-study"
+        },
+        {
+          "id": "positive-choice-10",
+          "text": "自宅の環境を理想にできるなら、外の音がまったく入らない静けさより、いつも快適な室温を選びたい。",
+          "yesLabel": "快適な室温",
+          "noLabel": "完全な静けさ",
+          "theme": "senses"
+        },
+        {
+          "id": "positive-choice-11",
+          "text": "一年間楽しめるなら、ライブ・舞台への月一回招待より、映画館の通い放題を選びたい。",
+          "yesLabel": "映画館通い放題",
+          "noLabel": "ライブ・舞台招待",
+          "theme": "entertainment"
+        },
+        {
+          "id": "positive-choice-12",
+          "text": "一瞬で得られるなら、プログラミング言語を一つ使いこなす力より、外国語を一つ話せる力を選びたい。",
+          "yesLabel": "外国語",
+          "noLabel": "プログラミング言語",
+          "theme": "work-study"
+        },
+        {
+          "id": "positive-choice-13",
+          "text": "身体能力が上がるなら、どんな運動にも対応できるバランス感覚より、長時間疲れない体力を選びたい。",
+          "yesLabel": "疲れない体力",
+          "noLabel": "バランス感覚",
+          "theme": "sports-health"
+        },
+        {
+          "id": "positive-choice-14",
+          "text": "買い物の特典なら、買った物が必ず長持ちすることより、すべての商品が二割引になることを選びたい。",
+          "yesLabel": "すべて二割引",
+          "noLabel": "必ず長持ち",
+          "theme": "money"
+        },
+        {
+          "id": "positive-choice-15",
+          "text": "毎日一時間増やせるなら、夜の自由時間より朝の自由時間を選びたい。",
+          "yesLabel": "朝の自由時間",
+          "noLabel": "夜の自由時間",
+          "theme": "daily"
+        },
+        {
+          "id": "positive-choice-16",
+          "text": "未来の自分から届くなら、十年後の自分の一日を映した動画より、十年後の自分からの手紙を選びたい。",
+          "yesLabel": "未来からの手紙",
+          "noLabel": "未来の一日の動画",
+          "theme": "future"
+        },
+        {
+          "id": "positive-choice-17",
+          "text": "デジタル機器の機能として欲しいなら、どこでも高速に通信できることより、充電が一か月持つことを選びたい。",
+          "yesLabel": "一か月持つ充電",
+          "noLabel": "どこでも高速通信",
+          "theme": "digital"
+        },
+        {
+          "id": "positive-choice-18",
+          "text": "自宅の近くにできるなら、充実した図書館より大きな公園を選びたい。",
+          "yesLabel": "大きな公園",
+          "noLabel": "充実した図書館",
+          "theme": "community"
+        },
+        {
+          "id": "positive-choice-19",
+          "text": "いつでも最良の状態になるなら、食事の栄養バランスより睡眠の質を選びたい。",
+          "yesLabel": "睡眠の質",
+          "noLabel": "食事の栄養",
+          "theme": "sports-health"
+        },
+        {
+          "id": "positive-choice-20",
+          "text": "好きな作品の世界を楽しめるなら、舞台となった場所で一週間暮らすことより、登場人物と一日過ごすことを選びたい。",
+          "yesLabel": "登場人物と過ごす",
+          "noLabel": "作品世界で暮らす",
+          "theme": "entertainment"
+        },
+        {
+          "id": "positive-choice-21",
+          "text": "子どもの頃の一日をもう一度楽しめるなら、家族で出かけた日より学校行事の日を選びたい。",
+          "yesLabel": "学校行事の日",
+          "noLabel": "家族で出かけた日",
+          "theme": "childhood"
+        },
+        {
+          "id": "positive-choice-22",
+          "text": "一年間住めるなら、森に囲まれた家より海が見える家を選びたい。",
+          "yesLabel": "海が見える家",
+          "noLabel": "森に囲まれた家",
+          "theme": "future"
+        },
+        {
+          "id": "positive-choice-23",
+          "text": "特別な食事を楽しむなら、好きな料理だけを集めた食べ放題より、一流店のコース料理を選びたい。",
+          "yesLabel": "一流店のコース",
+          "noLabel": "好きな料理の食べ放題",
+          "theme": "food"
+        },
+        {
+          "id": "positive-choice-24",
+          "text": "褒められるなら、気配りの細やかさより発想の面白さを褒められる方が嬉しい。",
+          "yesLabel": "発想の面白さ",
+          "noLabel": "気配りの細やかさ",
+          "theme": "relationships"
+        },
+        {
+          "id": "positive-choice-25",
+          "text": "新しく始めるなら、一生飽きずに続けられる趣味より、すぐ上達できる趣味を選びたい。",
+          "yesLabel": "すぐ上達する趣味",
+          "noLabel": "一生飽きない趣味",
+          "theme": "hobby"
+        },
+        {
+          "id": "positive-choice-26",
+          "text": "一つだけ保証されるなら、失敗からすぐ立ち直る力より、挑戦する勇気を選びたい。",
+          "yesLabel": "挑戦する勇気",
+          "noLabel": "立ち直る力",
+          "theme": "challenge"
+        },
+        {
+          "id": "positive-choice-27",
+          "text": "予定のない週末にもらうなら、どこへ行っても混雑しないことより、完璧な晴天を選びたい。",
+          "yesLabel": "完璧な晴天",
+          "noLabel": "混雑しないこと",
+          "theme": "daily"
+        },
+        {
+          "id": "positive-choice-28",
+          "text": "会話の力として得られるなら、相手の気持ちを正確にくみ取る力より、誰とでも話題が見つかる力を選びたい。",
+          "yesLabel": "話題を見つける力",
+          "noLabel": "気持ちをくみ取る力",
+          "theme": "relationships"
+        },
+        {
+          "id": "positive-choice-29",
+          "text": "地域に一つ増やせるなら、誰でも使える交流スペースより、無料で学べる教室を選びたい。",
+          "yesLabel": "無料の教室",
+          "noLabel": "交流スペース",
+          "theme": "community"
+        },
+        {
+          "id": "positive-choice-30",
+          "text": "自分の記録として残るなら、印象的な会話をまとめた本より、人生の写真をまとめたアルバムを選びたい。",
+          "yesLabel": "写真のアルバム",
+          "noLabel": "会話をまとめた本",
+          "theme": "values"
+        },
+        {
+          "id": "positive-choice-31",
+          "text": "一つだけ磨けるなら、服を選ぶセンスより、人を笑わせるセンスを身につけたい。",
+          "yesLabel": "人を笑わせるセンス",
+          "noLabel": "服を選ぶセンス",
+          "theme": "hobby",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "positive-choice-32",
+          "text": "会話の能力が上がるなら、上手に話す力より、上手に聞く力を伸ばしたい。",
+          "yesLabel": "上手に聞く力",
+          "noLabel": "上手に話す力",
+          "theme": "relationships",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "positive-choice-33",
+          "text": "自分について一つ知れるなら、本当の苦手より、まだ気づいていない得意を知りたい。",
+          "yesLabel": "気づいていない得意",
+          "noLabel": "本当の苦手",
+          "theme": "challenge",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "positive-choice-34",
+          "text": "特別な移動能力を得るなら、空を飛ぶ力より、好きな場所へ一瞬で移動する力が欲しい。",
+          "yesLabel": "一瞬で移動する力",
+          "noLabel": "空を飛ぶ力",
+          "theme": "travel",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "positive-choice-35",
+          "text": "働く条件がよくなるなら、毎月の収入が増えるより、毎週の休日が一日増える方が嬉しい。",
+          "yesLabel": "休日が一日増える",
+          "noLabel": "毎月の収入が増える",
+          "theme": "work-study",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "positive-choice-36",
+          "text": "毎日の特典なら、昼食代が無料になるより、通勤時間が半分になる方が嬉しい。",
+          "yesLabel": "通勤時間が半分",
+          "noLabel": "昼食代が無料",
+          "theme": "work-study",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "positive-choice-37",
+          "text": "タケコプターより、どこでもドアが欲しい。",
+          "yesLabel": "どこでもドア",
+          "noLabel": "タケコプター",
+          "theme": "entertainment",
+          "namedEntities": [
+            "どこでもドア",
+            "タケコプター"
+          ],
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "positive-choice-38",
+          "text": "人生最後の食事を選ぶなら、高級店の特別な料理より、食べ慣れたいつもの料理を選びたい。",
+          "yesLabel": "食べ慣れたいつもの料理",
+          "noLabel": "高級店の特別な料理",
+          "theme": "food",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "mortality"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "positive-choice-39",
+          "text": "大切な人から言われるなら、「一番」より「特別」という言葉が嬉しい。",
+          "yesLabel": "特別",
+          "noLabel": "一番",
+          "theme": "relationships",
+          "sensitivityLevel": 1,
+          "sensitiveTopics": [
+            "romance"
+          ],
+          "requiresOptIn": false,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "positive-choice-40",
+          "text": "大切な人から愛情を言葉で受け取るなら、一度だけの強い言葉より、日々の短い言葉が嬉しい。",
+          "yesLabel": "日々の短い愛情表現",
+          "noLabel": "一度だけの強い愛情表現",
+          "theme": "relationships",
+          "sensitivityLevel": 1,
+          "sensitiveTopics": [
+            "romance"
+          ],
+          "requiresOptIn": false,
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "positive-choice-41",
+          "text": "親密な相手との間で一つだけ分かるなら、自分の思いがすべて伝わることより、相手の本心がすべて分かることを選びたい。",
+          "yesLabel": "相手の本心が分かる",
+          "noLabel": "自分の思いが伝わる",
+          "theme": "relationships",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "romance",
+            "privacy"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "positive-choice-42",
+          "text": "臨時のお金を受け取るなら、今すぐの一万円より、一年後の十万円を選びたい。",
+          "yesLabel": "一年後の十万円",
+          "noLabel": "今すぐの一万円",
+          "theme": "money",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "positive-choice-43",
+          "text": "生活費の一つが生涯無料になるなら、食費より家賃を選びたい。",
+          "yesLabel": "家賃が無料",
+          "noLabel": "食費が無料",
+          "theme": "money",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "positive-choice-44",
+          "text": "生涯保てるものを一つ選ぶなら、若さより知恵を選びたい。",
+          "yesLabel": "知恵",
+          "noLabel": "若さ",
+          "theme": "values",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "positive-choice-45",
+          "text": "時間を自由に操れるなら、時間を止める力より、過去へ戻る力が欲しい。",
+          "yesLabel": "過去へ戻る力",
+          "noLabel": "時間を止める力",
+          "theme": "future",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "positive-choice-46",
+          "text": "一度だけ特別な体験ができるなら、無重力を味わうことより、透明になって過ごすことを選びたい。",
+          "yesLabel": "透明になって過ごす",
+          "noLabel": "無重力を味わう",
+          "theme": "entertainment",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "positive-choice-47",
+          "text": "自分の理想を一つ実現できるなら、理想の見た目より、理想の性格を手に入れたい。",
+          "yesLabel": "理想の性格",
+          "noLabel": "理想の見た目",
+          "theme": "values",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "positive-choice-48",
+          "text": "一つの不思議な力を得るなら、触れた物の歴史が分かる力より、動物と会話できる力が欲しい。",
+          "yesLabel": "動物と会話できる力",
+          "noLabel": "物の歴史が分かる力",
+          "theme": "hobby",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "positive-choice-49",
+          "text": "日常の移動が便利になるなら、信号がいつも青になることより、行列に並ばなくてよいことを選びたい。",
+          "yesLabel": "行列に並ばなくてよい",
+          "noLabel": "信号がいつも青になる",
+          "theme": "daily",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "positive-choice-50",
+          "text": "暮らしの快適さが一つ保証されるなら、すべての服が体に合うことより、寝具がいつも最高に快適なことを選びたい。",
+          "yesLabel": "最高に快適な寝具",
+          "noLabel": "体に合う服",
+          "theme": "daily",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "positive-choice-51",
+          "text": "学びに関する特別な機会なら、今の知識を持って子ども時代に戻ることより、将来学ぶ内容を今すぐ知ることを選びたい。",
+          "yesLabel": "将来の学びを今知る",
+          "noLabel": "今の知識で子ども時代に戻る",
+          "theme": "work-study",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "positive-choice-52",
+          "text": "表現力を一つ高められるなら、美しい歌声より、言葉で人を引きつける話術が欲しい。",
+          "yesLabel": "人を引きつける話術",
+          "noLabel": "美しい歌声",
+          "theme": "relationships",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "positive-choice-53",
+          "text": "生活を便利にする技術を一つ持てるなら、自動運転車より、家事が自動化された家を選びたい。",
+          "yesLabel": "家事が自動化された家",
+          "noLabel": "自動運転車",
+          "theme": "digital",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "positive-choice-54",
+          "text": "一つの分野で才能を得るなら、数学より絵画の才能を選びたい。",
+          "yesLabel": "絵画の才能",
+          "noLabel": "数学の才能",
+          "theme": "hobby",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "positive-choice-55",
+          "text": "健康を損なわず生活時間を増やせるなら、週に一度の食事で満足できる体より、毎日三時間の睡眠で十分な体を選びたい。",
+          "yesLabel": "毎日三時間の睡眠で十分",
+          "noLabel": "週に一度の食事で十分",
+          "theme": "sports-health",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "positive-choice-56",
+          "text": "航空券の特典なら、年一回の国際線往復無料より、国内線をいつでも無料で使える方が嬉しい。",
+          "yesLabel": "国内線がいつでも無料",
+          "noLabel": "年一回の国際線往復無料",
+          "theme": "travel",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "positive-choice-57",
+          "text": "感覚として一つ身につくなら、正確な時刻がいつでも分かることより、方角がいつでも分かることを選びたい。",
+          "yesLabel": "方角が分かる感覚",
+          "noLabel": "時刻が分かる感覚",
+          "theme": "senses",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        }
       ]
     },
     {
-      "id": "travel",
-      "label": "旅",
+      "id": "negative-choice",
+      "label": "究極の二択（どちらも避けたい）",
+      "answerType": "binary-choice",
+      "description": "困る二案から、本人がまだ受け入れられる側を言い切る自己記述文",
       "questions": [
-        { "id": "travel-01", "text": "旅行の計画は早めに立てますか？" },
-        { "id": "travel-02", "text": "一人旅をしてみたいですか？" },
-        { "id": "travel-03", "text": "旅行では予定を詰め込む方ですか？" },
-        { "id": "travel-04", "text": "海外旅行より国内旅行を選ぶことが多いですか？" },
-        { "id": "travel-05", "text": "宿泊先の快適さを重視しますか？" },
-        { "id": "travel-06", "text": "道に迷うことも旅の楽しみだと思いますか？" },
-        { "id": "travel-07", "text": "お土産を多く買う方ですか？" },
-        { "id": "travel-08", "text": "移動中に眠れる方ですか？" },
-        { "id": "travel-09", "text": "観光地より地元の街並みに惹かれますか？" },
-        { "id": "travel-10", "text": "旅行中も普段と同じ時間に起きますか？" },
-        { "id": "travel-11", "text": "荷物は少ない方ですか？" },
-        { "id": "travel-12", "text": "同じ場所を再訪する旅行が好きですか？" },
-        { "id": "travel-13", "text": "窓側の席を選びたいですか？" },
-        { "id": "travel-14", "text": "天候が悪くても予定通り出かけますか？" },
-        { "id": "travel-15", "text": "旅行写真を後から見返しますか？" },
-        { "id": "travel-16", "text": "知らない土地で人に道を尋ねられますか？" }
+        {
+          "id": "negative-choice-01",
+          "text": "毎日同じ夕食しか食べられないとすると、カレーよりもラーメンの方が良い。",
+          "yesLabel": "毎日同じ夕食",
+          "noLabel": "献立を決められない",
+          "theme": "food"
+        },
+        {
+          "id": "negative-choice-02",
+          "text": "旅行に出かけるとき、出発の飛行機が半日遅れるよりはロストバゲージのほうがマシだ。",
+          "yesLabel": "荷物が遅れる",
+          "noLabel": "予定がずれる",
+          "theme": "travel"
+        },
+        {
+          "id": "negative-choice-04",
+          "text": "急な雨でスマホの電池も切れそう。モバイルバッテリーと傘のどちらかが借りられるなら傘の方が良い。",
+          "yesLabel": "傘を忘れる",
+          "noLabel": "バッテリーを忘れる",
+          "theme": "daily"
+        },
+        {
+          "id": "negative-choice-05",
+          "text": "待ち合わせにおいて、自分が30分待たせるぐらいなら30分相手を待つほうが良い。",
+          "yesLabel": "自分が待つ",
+          "noLabel": "相手を待たせる",
+          "theme": "relationships"
+        },
+        {
+          "id": "negative-choice-06",
+          "text": "時間を潰す必要があるとき、少し暑い図書館と騒がしいフードコートなら図書館の方が良い。",
+          "yesLabel": "少し騒がしい",
+          "noLabel": "少し暑い",
+          "theme": "work-study"
+        },
+        {
+          "id": "negative-choice-11",
+          "text": "発表順、最初に発表するより最後に発表するほうが良い。",
+          "yesLabel": "最初に話す",
+          "noLabel": "最後まで待つ",
+          "theme": "work-study"
+        },
+        {
+          "id": "negative-choice-13",
+          "text": "休日に突然予定を入れられるよりは、予定が突然なくなる方が良い。",
+          "yesLabel": "予定がなくなる",
+          "noLabel": "予定が増える",
+          "theme": "daily"
+        },
+        {
+          "id": "negative-choice-15",
+          "text": "電車移動において、40分かかる空いている電車と20分かかる満員電車であれば空いている電車のほうが良い。",
+          "yesLabel": "いつも混んでいる",
+          "noLabel": "いつも遠回り",
+          "theme": "travel"
+        },
+        {
+          "id": "negative-choice-17",
+          "text": "趣味の道具を選ぶとき、見た目と使い勝手であれば見た目を優先する。",
+          "yesLabel": "好きだが使いにくい",
+          "noLabel": "便利だが好みでない",
+          "theme": "hobby"
+        },
+        {
+          "id": "negative-choice-21",
+          "text": "クソ暑い夏とクソ寒い冬だと、夏のほうが良い。",
+          "yesLabel": "少し暑い",
+          "noLabel": "少し寒い",
+          "theme": "senses"
+        },
+        {
+          "id": "negative-choice-25",
+          "text": "2日間の旅行、2日とも傘がいらない程度の小雨になるぐらいなら、1日大雨でもう1日晴れの方が良い。",
+          "yesLabel": "二日とも小雨",
+          "noLabel": "大雨と晴れ",
+          "theme": "daily"
+        },
+        {
+          "id": "negative-choice-28",
+          "text": "未来の予定について選ぶなら、前日まで何も決まらないことより、一年前から変更できない方がまだ受け入れられる。",
+          "yesLabel": "一年前から固定",
+          "noLabel": "前日まで未定",
+          "theme": "future"
+        },
+        {
+          "id": "negative-choice-29",
+          "text": "地域の行事で担当するなら、夜遅くの片付けより早朝の準備のほうが良い。",
+          "yesLabel": "早朝の準備",
+          "noLabel": "終了後の片付け",
+          "theme": "community"
+        },
+        {
+          "id": "negative-choice-31",
+          "text": "暖房のない冬より、冷房のない夏を過ごす方がまだ受け入れられる。",
+          "yesLabel": "冷房のない夏",
+          "noLabel": "暖房のない冬",
+          "theme": "senses",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "negative-choice-32",
+          "text": "忙しすぎる仕事より、暇すぎる仕事を続ける方がまだ受け入れられる。",
+          "yesLabel": "暇すぎる仕事",
+          "noLabel": "忙しすぎる仕事",
+          "theme": "work-study",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "negative-choice-33",
+          "text": "墓地の真ん中より、お化け屋敷で一晩過ごす方がまだ受け入れられる。",
+          "yesLabel": "お化け屋敷",
+          "noLabel": "墓地の真ん中",
+          "theme": "entertainment",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "negative-choice-34",
+          "text": "一晩中説教を聞くより、一晩中愚痴を聞く方がまだ受け入れられる。",
+          "yesLabel": "愚痴を聞く",
+          "noLabel": "説教を聞く",
+          "theme": "relationships",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "negative-choice-35",
+          "text": "一か月音楽を聴けないより、一か月スマートフォンを使えない方がまだ受け入れられる。",
+          "yesLabel": "スマートフォンなし",
+          "noLabel": "音楽なし",
+          "theme": "digital",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "negative-choice-36",
+          "text": "必ず髪型を変えるなら、坊主よりアフロの方がまだ受け入れられる。",
+          "yesLabel": "アフロ",
+          "noLabel": "坊主",
+          "theme": "senses",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "negative-choice-37",
+          "text": "一年中冬の気候になるより、一年中夏の気候になる方がまだ受け入れられる。",
+          "yesLabel": "一年中夏",
+          "noLabel": "一年中冬",
+          "theme": "senses",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "negative-choice-38",
+          "text": "冬にかき氷を食べるより、夏に熱いおでんを食べる方がまだ受け入れられる。",
+          "yesLabel": "夏の熱いおでん",
+          "noLabel": "冬のかき氷",
+          "theme": "food",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "negative-choice-39",
+          "text": "親密な相手の感情表現がまったくないより、大げさすぎる方がまだ受け入れられる。",
+          "yesLabel": "大げさな感情表現",
+          "noLabel": "感情表現がない",
+          "theme": "relationships",
+          "sensitivityLevel": 1,
+          "sensitiveTopics": [
+            "romance"
+          ],
+          "requiresOptIn": false,
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "negative-choice-40",
+          "text": "裕福でも周囲から嫌われるより、貧しくても周囲から好かれる方がまだ受け入れられる。",
+          "yesLabel": "貧しくても好かれる",
+          "noLabel": "裕福でも嫌われる",
+          "theme": "money",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "negative-choice-41",
+          "text": "給料が高くても人間関係が険悪な職場より、給料が低くても人間関係が良好な職場の方がまだ受け入れられる。",
+          "yesLabel": "低給料で良好な人間関係",
+          "noLabel": "高給料で険悪な人間関係",
+          "theme": "work-study",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "negative-choice-42",
+          "text": "一か月間水道が使えないより、一か月間電気が使えない方がまだ受け入れられる。",
+          "yesLabel": "電気が使えない",
+          "noLabel": "水道が使えない",
+          "theme": "daily",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "negative-choice-43",
+          "text": "肉類を一生食べられないより、酒類を一生飲めない方がまだ受け入れられる。",
+          "yesLabel": "酒類を飲めない",
+          "noLabel": "肉類を食べられない",
+          "theme": "food",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "negative-choice-44",
+          "text": "考えている内容が常に他人へ見えるより、日常の行動が常に配信される方がまだ受け入れられる。",
+          "yesLabel": "行動が常に配信される",
+          "noLabel": "考えが常に見える",
+          "theme": "digital",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "privacy"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "negative-choice-45",
+          "text": "水を一切飲めないより、水以外の飲み物を一切飲めない方がまだ受け入れられる。",
+          "yesLabel": "水以外を飲めない",
+          "noLabel": "水を飲めない",
+          "theme": "food",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "negative-choice-46",
+          "text": "食事でフォークだけしか使えないより、スプーンだけしか使えない方がまだ受け入れられる。",
+          "yesLabel": "スプーンだけを使う",
+          "noLabel": "フォークだけを使う",
+          "theme": "food",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "negative-choice-47",
+          "text": "着るシャツがすべて少しかゆいより、薄いトイレットペーパーしか使えない方がまだ受け入れられる。",
+          "yesLabel": "薄いトイレットペーパー",
+          "noLabel": "少しかゆいシャツ",
+          "theme": "senses",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "negative-choice-48",
+          "text": "話す言葉をすべて歌うより、読む文字をすべて声に出す方がまだ受け入れられる。",
+          "yesLabel": "読む文字を声に出す",
+          "noLabel": "話す言葉を歌う",
+          "theme": "relationships",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "negative-choice-49",
+          "text": "検索サービスを使えないより、SNSを使えない方がまだ受け入れられる。",
+          "yesLabel": "SNSを使えない",
+          "noLabel": "検索サービスを使えない",
+          "theme": "digital",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "negative-choice-50",
+          "text": "食事がすべて極端に辛くなるより、食事がすべて極端に薄味になる方がまだ受け入れられる。",
+          "yesLabel": "極端な薄味",
+          "noLabel": "極端な辛さ",
+          "theme": "food",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "negative-choice-51",
+          "text": "枕も毛布もないベッドで寝るより、枕と毛布を使って床で寝る方がまだ受け入れられる。",
+          "yesLabel": "寝具を使って床で寝る",
+          "noLabel": "寝具なしでベッドに寝る",
+          "theme": "daily",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "negative-choice-52",
+          "text": "目がいつも乾いているより、鼻水がいつも出る方がまだ受け入れられる。",
+          "yesLabel": "鼻水がいつも出る",
+          "noLabel": "目がいつも乾く",
+          "theme": "sports-health",
+          "sensitivityLevel": 1,
+          "sensitiveTopics": [
+            "body"
+          ],
+          "requiresOptIn": false,
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "negative-choice-53",
+          "text": "トイレの水が流れ続けるより、蛇口から少量の水が漏れ続ける方がまだ受け入れられる。",
+          "yesLabel": "蛇口から水が漏れる",
+          "noLabel": "トイレの水が流れ続ける",
+          "theme": "daily",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        }
       ]
     },
     {
-      "id": "work",
-      "label": "仕事・学び",
+      "id": "experience",
+      "label": "これまでの経験有無",
+      "answerType": "yes-no",
+      "description": "本人が過去に経験したことを言い切る自己記述文",
       "questions": [
-        { "id": "work-01", "text": "締切より早く作業を終える方ですか？" },
-        { "id": "work-02", "text": "人前で発表することは得意ですか？" },
-        { "id": "work-03", "text": "複数の作業を同時に進められますか？" },
-        { "id": "work-04", "text": "分からないことをすぐに質問できますか？" },
-        { "id": "work-05", "text": "紙よりデジタルでメモを取りますか？" },
-        { "id": "work-06", "text": "競争がある方が力を発揮できますか？" },
-        { "id": "work-07", "text": "細部まで確認してから提出しますか？" },
-        { "id": "work-08", "text": "静かな場所の方が集中できますか？" },
-        { "id": "work-09", "text": "新しい道具や手法をすぐ試しますか？" },
-        { "id": "work-10", "text": "失敗した理由を記録しますか？" },
-        { "id": "work-11", "text": "得意分野をさらに伸ばしたいですか？" },
-        { "id": "work-12", "text": "役割が明確なチームを好みますか？" },
-        { "id": "work-13", "text": "予定外の依頼にも柔軟に対応できますか？" },
-        { "id": "work-14", "text": "勉強するとき目標時間を決めますか？" },
-        { "id": "work-15", "text": "自分の成果を積極的に伝えられますか？" },
-        { "id": "work-16", "text": "仕事や勉強の場所を時々変えますか？" }
+        {
+          "id": "experience-01",
+          "text": "一人旅をしたことがある。",
+          "theme": "travel"
+        },
+        {
+          "id": "experience-03",
+          "text": "小さい頃にたくさん習い事をしていた。",
+          "theme": "entertainment"
+        },
+        {
+          "id": "experience-05",
+          "text": "日の出を見るために早起きしたことがある。",
+          "theme": "daily"
+        },
+        {
+          "id": "experience-07",
+          "text": "百人以上の前で何かしらの発表をしたことがある。",
+          "theme": "work-study"
+        },
+        {
+          "id": "experience-08",
+          "text": "半年以上お金を貯めてほしいものを買ったことがある。",
+          "theme": "money"
+        },
+        {
+          "id": "experience-09",
+          "text": "社会人になってから、一日スマートフォンを使わずに過ごしたことがある。",
+          "theme": "digital"
+        },
+        {
+          "id": "experience-11",
+          "text": "子どもの頃、秘密基地を作ったことがある。",
+          "theme": "childhood"
+        },
+        {
+          "id": "experience-12",
+          "text": "将来の自分に向けて手紙を書いたことがある。",
+          "theme": "future"
+        },
+        {
+          "id": "experience-16",
+          "text": "ボランティア活動に参加したことがある。",
+          "theme": "community"
+        },
+        {
+          "id": "experience-17",
+          "text": "行列に三十分以上並んで食事をしたことがある。",
+          "theme": "food"
+        },
+        {
+          "id": "experience-18",
+          "text": "予定を決めずに日帰りで出かけたことがある。",
+          "theme": "travel"
+        },
+        {
+          "id": "experience-19",
+          "text": "同じ映画やドラマ・アニメを三回以上見たことがある。",
+          "theme": "entertainment"
+        },
+        {
+          "id": "experience-22",
+          "text": "初対面の人と二人きりで一時間以上話したことがある。",
+          "theme": "relationships"
+        },
+        {
+          "id": "experience-24",
+          "text": "中古品を購入したことがある。",
+          "theme": "money"
+        },
+        {
+          "id": "experience-26",
+          "text": "五キロメートル以上を続けて歩いたことがある。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "experience-31",
+          "text": "雪道を車で走ったことがある。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "experience-27",
+          "text": "子どもの頃に学級委員・クラス委員を務めたことがある。",
+          "theme": "childhood"
+        },
+        {
+          "id": "experience-30",
+          "text": "町中の落とし物を警察に届けたことがある。",
+          "theme": "community"
+        },
+        {
+          "id": "experience-32",
+          "text": "緊急通報（110/118/119）をしたことがある。",
+          "theme": "community"
+        },
+        {
+          "id": "experience-33",
+          "text": "スカイダイビングをしたことがある。",
+          "theme": "community"
+        },
+        {
+          "id": "experience-34",
+          "text": "バンジージャンプをしたことがある。",
+          "theme": "community"
+        },
+        {
+          "id": "experience-35",
+          "text": "ダイビングをしたことがある。",
+          "theme": "community"
+        },
+        {
+          "id": "experience-36",
+          "text": "富士山に登ったことがある。",
+          "theme": "community"
+        }
+      ]
+    },
+    {
+      "id": "preference",
+      "label": "趣味・嗜好",
+      "answerType": "yes-no",
+      "description": "好き嫌いや楽しみ方について、本人が選びたい側を表す自己記述文",
+      "questions": [
+        {
+          "id": "preference-01",
+          "text": "甘い物より辛い物を選ぶことが多い。",
+          "theme": "food"
+        },
+        {
+          "id": "preference-02",
+          "text": "旅行では有名な観光地より、地元の日常が見える場所を訪れたい。",
+          "theme": "travel"
+        },
+        {
+          "id": "preference-03",
+          "text": "映画は自宅より映画館で観たい。",
+          "theme": "entertainment"
+        },
+        {
+          "id": "preference-04",
+          "text": "趣味は、一人で集中して楽しめるものが好きだ。",
+          "theme": "hobby"
+        },
+        {
+          "id": "preference-05",
+          "text": "予定が決まっている休日より、予定のない休日が好きだ。",
+          "theme": "daily"
+        },
+        {
+          "id": "preference-06",
+          "text": "大人数の集まりより、少人数で話す方が好きだ。",
+          "theme": "relationships"
+        },
+        {
+          "id": "preference-07",
+          "text": "勉強するときは、画面で読むより紙に書いて覚えたい。",
+          "theme": "work-study"
+        },
+        {
+          "id": "preference-08",
+          "text": "物を買うより、体験にお金を使いたい。",
+          "theme": "money"
+        },
+        {
+          "id": "preference-09",
+          "text": "電話で話すより、文章でやり取りする方が好きだ。",
+          "theme": "digital"
+        },
+        {
+          "id": "preference-10",
+          "text": "スポーツは観戦するより、自分でプレーしたい。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "preference-11",
+          "text": "子どもの頃は、外遊びより室内遊びが好きだった。",
+          "theme": "childhood"
+        },
+        {
+          "id": "preference-12",
+          "text": "将来は便利な都会より、自然の多い場所で暮らしたい。",
+          "theme": "future"
+        },
+        {
+          "id": "preference-13",
+          "text": "勝敗がつく遊びより、協力して進める遊びが好きだ。",
+          "theme": "values"
+        },
+        {
+          "id": "preference-14",
+          "text": "作業中は無音より、音楽が流れている方が心地よい。",
+          "theme": "senses"
+        },
+        {
+          "id": "preference-15",
+          "text": "慣れたことを深めるより、新しいことを試したい。",
+          "theme": "challenge"
+        },
+        {
+          "id": "preference-16",
+          "text": "大きな商業施設より、地域の小さなお店を巡りたい。",
+          "theme": "community"
+        },
+        {
+          "id": "preference-17",
+          "text": "温かい飲み物より、冷たい飲み物を選ぶことが多い。",
+          "theme": "food"
+        },
+        {
+          "id": "preference-18",
+          "text": "旅行の予定は細かく決めず、現地で考えたい。",
+          "theme": "travel"
+        },
+        {
+          "id": "preference-19",
+          "text": "初めての作品より、気に入った作品を繰り返し楽しみたい。",
+          "theme": "entertainment"
+        },
+        {
+          "id": "preference-20",
+          "text": "趣味の道具は、機能だけでなく見た目にもこだわりたい。",
+          "theme": "hobby"
+        },
+        {
+          "id": "preference-21",
+          "text": "休日でも、朝早くから活動したい。",
+          "theme": "daily"
+        },
+        {
+          "id": "preference-22",
+          "text": "贈り物は実用品より、思い出に残る物を選びたい。",
+          "theme": "relationships"
+        },
+        {
+          "id": "preference-23",
+          "text": "仕事や勉強は、自宅より専用の場所でしたい。",
+          "theme": "work-study"
+        },
+        {
+          "id": "preference-24",
+          "text": "高価な物を一つ持つより、手頃な物を複数楽しみたい。",
+          "theme": "money"
+        },
+        {
+          "id": "preference-25",
+          "text": "写真を撮るより、その場を自分の目で楽しみたい。",
+          "theme": "digital"
+        },
+        {
+          "id": "preference-26",
+          "text": "運動するなら、屋内より屋外を選びたい。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "preference-27",
+          "text": "文章や作品は、結末がはっきりしたものが好きだ。",
+          "theme": "entertainment"
+        },
+        {
+          "id": "preference-28",
+          "text": "夏より冬の方が好きだ。",
+          "theme": "senses"
+        },
+        {
+          "id": "preference-29",
+          "text": "新しい場所へ行くなら、一人より誰かと一緒に行きたい。",
+          "theme": "challenge"
+        },
+        {
+          "id": "preference-30",
+          "text": "自由時間には、外出するより家で過ごしたい。",
+          "theme": "daily"
+        },
+        {
+          "id": "preference-31",
+          "text": "海外の音楽より、国内の音楽を聴く方が好きだ。",
+          "theme": "entertainment",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-32",
+          "text": "記念日の食事は、初めての店より行きつけの店で楽しみたい。",
+          "theme": "food",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-33",
+          "text": "夏に水辺へ出かけるなら、プールより海へ行きたい。",
+          "theme": "travel",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-34",
+          "text": "日曜日より、これから休みが始まる土曜日の方が好きだ。",
+          "theme": "daily",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-35",
+          "text": "猫より犬と暮らしてみたい。",
+          "theme": "relationships",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-36",
+          "text": "普段持ち歩くかばんは、大きい物より小さい物を選びたい。",
+          "theme": "daily",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-37",
+          "text": "色数を抑えた服装より、カラフルな服装が好きだ。",
+          "theme": "senses",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-38",
+          "text": "うどんより、そばを食べる方が好きだ。",
+          "theme": "food",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-39",
+          "text": "魚料理より、肉料理を選ぶことが多い。",
+          "theme": "food",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-40",
+          "text": "長距離を移動するなら、自動車より飛行機を使いたい。",
+          "theme": "travel",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-41",
+          "text": "恋人にするなら、年下より年上の人を選びたい。",
+          "theme": "relationships",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "romance"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-42",
+          "text": "デートで出かけるなら、水族館より映画館へ行きたい。",
+          "theme": "relationships",
+          "sensitivityLevel": 1,
+          "sensitiveTopics": [
+            "romance"
+          ],
+          "requiresOptIn": false,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-43",
+          "text": "恋人と一緒に過ごすなら、誕生日よりクリスマスを選びたい。",
+          "theme": "relationships",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "romance"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-44",
+          "text": "服装を選ぶなら、パンツスタイルよりスカートスタイルが好きだ。",
+          "theme": "senses",
+          "sensitivityLevel": 1,
+          "sensitiveTopics": [
+            "gender-expression"
+          ],
+          "requiresOptIn": false,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-45",
+          "text": "水着を選ぶなら、ワンピースタイプよりビキニタイプを着たい。",
+          "theme": "senses",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "body"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-46",
+          "text": "東京ディズニーシーより、東京ディズニーランドへ行きたい。",
+          "theme": "entertainment",
+          "namedEntities": [
+            "東京ディズニーランド",
+            "東京ディズニーシー"
+          ],
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-47",
+          "text": "ディズニー作品より、スタジオジブリ作品の方が好きだ。",
+          "theme": "entertainment",
+          "namedEntities": [
+            "ディズニー",
+            "スタジオジブリ"
+          ],
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-48",
+          "text": "「たけのこの里」より「きのこの山」の方が好きだ。",
+          "theme": "food",
+          "namedEntities": [
+            "きのこの山",
+            "たけのこの里"
+          ],
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-49",
+          "text": "Instagramより、Xを日常的に使いたい。",
+          "theme": "digital",
+          "namedEntities": [
+            "X",
+            "Instagram"
+          ],
+          "timeSensitive": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-50",
+          "text": "友人と盛り上がるなら、怪談より恋愛の話をしたい。",
+          "theme": "relationships",
+          "sensitivityLevel": 1,
+          "sensitiveTopics": [
+            "romance"
+          ],
+          "requiresOptIn": false,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "preference-51",
+          "text": "恋人とは、月に一度ゆっくり会うより、短時間でも毎日会いたい。",
+          "theme": "relationships",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "romance"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "preference-52",
+          "text": "人生を共にする相手には、外見の好みより性格の相性を重視したい。",
+          "theme": "relationships",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "romance"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "preference-53",
+          "text": "食生活を一つに固定するなら、外食だけより自炊だけの暮らしを選びたい。",
+          "theme": "food",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "preference-54",
+          "text": "初めてのデートでキスをすることに抵抗がない。",
+          "theme": "relationships",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "romance",
+            "intimacy"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "preference-55",
+          "text": "残りの人生を移動しながら暮らすなら、キャンピングカーよりヨットを選びたい。",
+          "theme": "travel",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "preference-56",
+          "text": "人気コンテンツを運営するなら、YouTubeチャンネルよりポッドキャストを持ちたい。",
+          "theme": "digital",
+          "namedEntities": [
+            "YouTube"
+          ],
+          "timeSensitive": true,
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "preference-57",
+          "text": "俳優として出演するなら、テレビシリーズより映画を選びたい。",
+          "theme": "entertainment",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "preference-58",
+          "text": "一週間の旅行なら、クルーズよりハイキングやキャンプを選びたい。",
+          "theme": "travel",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        }
+      ]
+    },
+    {
+      "id": "physical-ability",
+      "label": "運動・身体能力",
+      "answerType": "yes-no",
+      "description": "30歳前後の参加者でも回答が分かれやすい、記録、技能、競技経験に関する自己記述文",
+      "questions": [
+        {
+          "id": "physical-ability-01",
+          "text": "50メートル走を7秒未満で走ったことがある。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-03",
+          "text": "1キロメートルを5分未満で走れる。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-05",
+          "text": "10キロメートル以上のマラソンを完走したことがある。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-06",
+          "text": "ハーフマラソン以上の距離を完走したことがある。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-07",
+          "text": "体力テストでA評価を取ったことがある。",
+          "theme": "childhood"
+        },
+        {
+          "id": "physical-ability-08",
+          "text": "立ち幅跳びで2メートル以上跳べる。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-09",
+          "text": "左右どちらかの握力で45キログラム以上を記録したことがある。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-10",
+          "text": "30秒間で上体起こしを30回以上できる。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-12",
+          "text": "長座体前屈で50センチメートル以上を記録したことがある。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-13",
+          "text": "懸垂を連続10回以上できる。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-14",
+          "text": "腕立て伏せを連続30回以上できる。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-15",
+          "text": "プランクの姿勢を2分以上保てる。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-16",
+          "text": "自重スクワットを連続50回以上できる。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-17",
+          "text": "縄跳びの二重跳びを連続10回以上できる。",
+          "theme": "childhood"
+        },
+        {
+          "id": "physical-ability-18",
+          "text": "補助なしで倒立を10秒以上保てる。",
+          "theme": "challenge"
+        },
+        {
+          "id": "physical-ability-19",
+          "text": "足をつかずに100メートル以上泳げる。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-21",
+          "text": "スキーまたはスノーボードで中級者向けコースを滑れる。",
+          "theme": "travel"
+        },
+        {
+          "id": "physical-ability-23",
+          "text": "スポーツの県大会で優勝したことがある。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-26",
+          "text": "野球ボールを50メートル以上投げられる。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-27",
+          "text": "サッカーボールのリフティングを連続20回以上できる。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-28",
+          "text": "バスケットボールのフリースローを10本中7本以上決められる。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-29",
+          "text": "バドミントンで30回以上ラリーを続けられる。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "physical-ability-30",
+          "text": "鉄棒で逆上がりを連続3回以上できる。",
+          "theme": "childhood"
+        }
+      ]
+    },
+    {
+      "id": "knowledge",
+      "label": "知識・教養",
+      "answerType": "yes-no",
+      "description": "大学1〜2年生向けの心理学、雑学、漢字、日本語、テクノロジー、歴史に関する自己記述文",
+      "questions": [
+        {
+          "id": "knowledge-01",
+          "text": "古典的条件づけとオペラント条件づけの違いを説明できる。",
+          "theme": "work-study",
+          "subject": "psychology"
+        },
+        {
+          "id": "knowledge-02",
+          "text": "確証バイアスを、日常的な例を挙げて説明できる。",
+          "theme": "values",
+          "subject": "psychology"
+        },
+        {
+          "id": "knowledge-03",
+          "text": "ワーキングメモリと長期記憶の違いを説明できる。",
+          "theme": "work-study",
+          "subject": "psychology"
+        },
+        {
+          "id": "knowledge-04",
+          "text": "認知的不協和がどのような心理状態か説明できる。",
+          "theme": "values",
+          "subject": "psychology"
+        },
+        {
+          "id": "knowledge-05",
+          "text": "プラセボ効果がどのような現象か説明できる。",
+          "theme": "sports-health",
+          "subject": "psychology"
+        },
+        {
+          "id": "knowledge-06",
+          "text": "西暦が100で割り切れる年でも、うるう年にならない場合があることを説明できる。",
+          "theme": "daily",
+          "subject": "trivia"
+        },
+        {
+          "id": "knowledge-07",
+          "text": "地球に季節が生まれる理由を説明できる。",
+          "theme": "community",
+          "subject": "trivia"
+        },
+        {
+          "id": "knowledge-08",
+          "text": "せっけんが油汚れを水で洗い流せる理由を説明できる。",
+          "theme": "daily",
+          "subject": "trivia"
+        },
+        {
+          "id": "knowledge-09",
+          "text": "炭酸飲料を開けると泡が出る理由を説明できる。",
+          "theme": "food",
+          "subject": "trivia"
+        },
+        {
+          "id": "knowledge-10",
+          "text": "世界最大の砂漠が南極大陸とされる理由を説明できる。",
+          "theme": "travel",
+          "subject": "trivia"
+        },
+        {
+          "id": "knowledge-11",
+          "text": "「ちゅうちょ」を漢字で書ける。",
+          "theme": "work-study",
+          "subject": "kanji"
+        },
+        {
+          "id": "knowledge-12",
+          "text": "「あいまい」を漢字で書ける。",
+          "theme": "work-study",
+          "subject": "kanji"
+        },
+        {
+          "id": "knowledge-13",
+          "text": "「遵守」の読み方と意味を説明できる。",
+          "theme": "work-study",
+          "subject": "kanji"
+        },
+        {
+          "id": "knowledge-14",
+          "text": "「漸次」の読み方と意味を説明できる。",
+          "theme": "work-study",
+          "subject": "kanji"
+        },
+        {
+          "id": "knowledge-15",
+          "text": "「ききいっぱつ」を正しい漢字で書ける。",
+          "theme": "work-study",
+          "subject": "kanji"
+        },
+        {
+          "id": "knowledge-16",
+          "text": "尊敬語と謙譲語の違いを、例を挙げて説明できる。",
+          "theme": "relationships",
+          "subject": "japanese"
+        },
+        {
+          "id": "knowledge-17",
+          "text": "直喩と隠喩の違いを、例を挙げて説明できる。",
+          "theme": "entertainment",
+          "subject": "japanese"
+        },
+        {
+          "id": "knowledge-18",
+          "text": "同音異義語と同訓異字の違いを説明できる。",
+          "theme": "work-study",
+          "subject": "japanese"
+        },
+        {
+          "id": "knowledge-19",
+          "text": "「役不足」という言葉の本来の意味を説明できる。",
+          "theme": "relationships",
+          "subject": "japanese"
+        },
+        {
+          "id": "knowledge-20",
+          "text": "ら抜き言葉がどのような表現か、例を挙げて説明できる。",
+          "theme": "relationships",
+          "subject": "japanese"
+        },
+        {
+          "id": "knowledge-21",
+          "text": "CPUとメモリの役割の違いを説明できる。",
+          "theme": "digital",
+          "subject": "technology"
+        },
+        {
+          "id": "knowledge-22",
+          "text": "Wi-Fiと携帯電話回線の違いを説明できる。",
+          "theme": "digital",
+          "subject": "technology"
+        },
+        {
+          "id": "knowledge-23",
+          "text": "クラウドサービスが何を意味するか説明できる。",
+          "theme": "digital",
+          "subject": "technology"
+        },
+        {
+          "id": "knowledge-24",
+          "text": "二段階認証が安全性を高める理由を説明できる。",
+          "theme": "digital",
+          "subject": "technology"
+        },
+        {
+          "id": "knowledge-25",
+          "text": "生成AIと検索エンジンの違いを説明できる。",
+          "theme": "digital",
+          "subject": "technology"
+        },
+        {
+          "id": "knowledge-26",
+          "text": "江戸幕府が参勤交代を行わせた目的を説明できる。",
+          "theme": "community",
+          "subject": "history"
+        },
+        {
+          "id": "knowledge-27",
+          "text": "明治維新によって日本の政治や社会がどう変わったか説明できる。",
+          "theme": "community",
+          "subject": "history"
+        },
+        {
+          "id": "knowledge-28",
+          "text": "産業革命が人々の暮らしや働き方へ与えた変化を説明できる。",
+          "theme": "work-study",
+          "subject": "history"
+        },
+        {
+          "id": "knowledge-29",
+          "text": "フランス革命で掲げられた理念を説明できる。",
+          "theme": "values",
+          "subject": "history"
+        },
+        {
+          "id": "knowledge-30",
+          "text": "冷戦が「冷たい戦争」と呼ばれた理由を説明できる。",
+          "theme": "community",
+          "subject": "history"
+        }
       ]
     },
     {
       "id": "values",
-      "label": "価値観",
+      "label": "価値観・人生観",
+      "answerType": "yes-no",
+      "description": "どちらにも利点がある価値を比較し、本人が優先したい側を表す自己記述文",
       "questions": [
-        { "id": "values-01", "text": "結果より過程が大切だと思いますか？" },
-        { "id": "values-02", "text": "多数派と違う意見でも表明できますか？" },
-        { "id": "values-03", "text": "約束には遅れないことを重視しますか？" },
-        { "id": "values-04", "text": "高価でも長く使えるものを選びますか？" },
-        { "id": "values-05", "text": "迷ったときは直感を信じますか？" },
-        { "id": "values-06", "text": "伝統は守る価値があると思いますか？" },
-        { "id": "values-07", "text": "善意の嘘は許されると思いますか？" },
-        { "id": "values-08", "text": "努力は才能を上回ることがあると思いますか？" },
-        { "id": "values-09", "text": "他人からの評価を気にする方ですか？" },
-        { "id": "values-10", "text": "便利さより環境への配慮を優先できますか？" },
-        { "id": "values-11", "text": "困っている人には自分から声をかけますか？" },
-        { "id": "values-12", "text": "勝敗がつく遊びの方が好きですか？" },
-        { "id": "values-13", "text": "物より経験にお金を使いたいですか？" },
-        { "id": "values-14", "text": "ルールには例外が必要だと思いますか？" },
-        { "id": "values-15", "text": "自分と異なる考えを聞くことが好きですか？" },
-        { "id": "values-16", "text": "大きな決断は誰かに相談しますか？" }
+        {
+          "id": "values-01",
+          "text": "大きく成長できる環境より、安定して続けられる環境を選びたい。",
+          "theme": "challenge"
+        },
+        {
+          "id": "values-02",
+          "text": "よい過程を踏むことより、最終的によい結果を出すことを優先したい。",
+          "theme": "values"
+        },
+        {
+          "id": "values-03",
+          "text": "多くの人とつながることより、少数の人と深く関わりたい。",
+          "theme": "relationships"
+        },
+        {
+          "id": "values-04",
+          "text": "個人情報を守ることより、サービスの便利さを優先したい。",
+          "theme": "digital"
+        },
+        {
+          "id": "values-05",
+          "text": "将来への備えより、今しかできない経験を優先したい。",
+          "theme": "future"
+        },
+        {
+          "id": "values-06",
+          "text": "必要なときだけ借りるより、自分の物として所有したい。",
+          "theme": "money"
+        },
+        {
+          "id": "values-07",
+          "text": "幅広くできる人より、一つの分野を極めた人になりたい。",
+          "theme": "work-study"
+        },
+        {
+          "id": "values-08",
+          "text": "自然の近さより、都市生活の便利さを優先したい。",
+          "theme": "community"
+        },
+        {
+          "id": "values-09",
+          "text": "自由な時間より、仕事や活動で大きな成果を残したい。",
+          "theme": "work-study"
+        },
+        {
+          "id": "values-10",
+          "text": "予定を柔軟に変えるより、決めた計画どおりに進めたい。",
+          "theme": "daily"
+        },
+        {
+          "id": "values-11",
+          "text": "集団の調和より、個人が自由に選べることを優先したい。",
+          "theme": "relationships"
+        },
+        {
+          "id": "values-12",
+          "text": "状況に合わせて判断を変えるより、全員に同じルールを適用したい。",
+          "theme": "community"
+        },
+        {
+          "id": "values-13",
+          "text": "新しい方法を取り入れるより、受け継がれてきた方法を守りたい。",
+          "theme": "community"
+        },
+        {
+          "id": "values-14",
+          "text": "相手への配慮より、自分の考えを率直に伝えることを優先したい。",
+          "theme": "relationships"
+        },
+        {
+          "id": "values-15",
+          "text": "協力して目標を達成するより、競争の中で力を伸ばしたい。",
+          "theme": "challenge"
+        },
+        {
+          "id": "values-16",
+          "text": "大きな成功の可能性より、失敗しない確実な選択を取りたい。",
+          "theme": "challenge"
+        },
+        {
+          "id": "values-17",
+          "text": "多くの選択肢を持つより、少数でも質の高い選択肢を持ちたい。",
+          "theme": "values"
+        },
+        {
+          "id": "values-18",
+          "text": "お金を節約することより、時間を節約することを優先したい。",
+          "theme": "money"
+        },
+        {
+          "id": "values-19",
+          "text": "安く買える物より、地域で作られた物を選びたい。",
+          "theme": "community"
+        },
+        {
+          "id": "values-20",
+          "text": "中心に立って導くより、支える立場で力を発揮したい。",
+          "theme": "relationships"
+        },
+        {
+          "id": "values-21",
+          "text": "多くの分野を学ぶより、一つの分野を深く学びたい。",
+          "theme": "work-study"
+        },
+        {
+          "id": "values-22",
+          "text": "人に頼るより、自分だけで解決できるようになりたい。",
+          "theme": "relationships"
+        },
+        {
+          "id": "values-23",
+          "text": "新しい物を買うより、旅行やイベントなどの体験へお金を使いたい。",
+          "theme": "money"
+        },
+        {
+          "id": "values-24",
+          "text": "細部まで完成度を高めるより、早く形にすることを優先したい。",
+          "theme": "work-study"
+        },
+        {
+          "id": "values-25",
+          "text": "安心できる慣れた選択より、予想できない新しい選択を取りたい。",
+          "theme": "challenge"
+        },
+        {
+          "id": "values-26",
+          "text": "周囲との合意より、自分が納得できる判断を優先したい。",
+          "theme": "values"
+        },
+        {
+          "id": "values-27",
+          "text": "行動の結果より、その人の意図を重く見たい。",
+          "theme": "values"
+        },
+        {
+          "id": "values-28",
+          "text": "好きなことを仕事にするより、仕事と趣味を分けておきたい。",
+          "theme": "hobby"
+        },
+        {
+          "id": "values-29",
+          "text": "生活水準を上げるより、働く時間を減らしたい。",
+          "theme": "money"
+        },
+        {
+          "id": "values-30",
+          "text": "今の暮らしに満足するより、常に次の目標を持ちたい。",
+          "theme": "future"
+        },
+        {
+          "id": "values-31",
+          "text": "食事では、十分な量があることより、一品ごとの質を重視したい。",
+          "theme": "food",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-32",
+          "text": "大切な決断では、論理的な理由より自分の直感を信じたい。",
+          "theme": "values",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-33",
+          "text": "周囲からは、真面目な人より個性的な人だと思われたい。",
+          "theme": "relationships",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-34",
+          "text": "成果の大きさより、そこまで努力したことを評価されたい。",
+          "theme": "work-study",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-35",
+          "text": "社会的な知名度を得るより、自分の時間にゆとりを持ちたい。",
+          "theme": "values",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-36",
+          "text": "仕事で成果を残すことより、私生活の人間関係を大切にしたい。",
+          "theme": "relationships",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-37",
+          "text": "生活費が保証されても、何らかの仕事を続けたい。",
+          "theme": "work-study",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-38",
+          "text": "標準的な新品より、質の高い中古品を選びたい。",
+          "theme": "money",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-39",
+          "text": "収入の高さより、自分がやりたい仕事内容を優先したい。",
+          "theme": "work-study",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-40",
+          "text": "一人で自由に過ごせることより、人とのつながりを感じられることを優先したい。",
+          "theme": "relationships",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-41",
+          "text": "恋愛関係では、経済的な安定より愛情の深さを重視したい。",
+          "theme": "relationships",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "romance"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-42",
+          "text": "仕事と恋愛の予定が重なったら、仕事より恋愛を優先したい。",
+          "theme": "relationships",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "romance"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-43",
+          "text": "恋人と金銭感覚が違っても、話し合いながら関係を続けたい。",
+          "theme": "money",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "romance",
+            "money"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-44",
+          "text": "結婚後のお金は、一つにまとめるより、それぞれで管理したい。",
+          "theme": "money",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "romance",
+            "marriage"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-45",
+          "text": "結婚相手には、収入の高さより生活を回す力を求めたい。",
+          "theme": "relationships",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "romance",
+            "marriage",
+            "money"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-46",
+          "text": "平凡でも長く生きるより、短くても充実した人生を送りたい。",
+          "theme": "values",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "mortality"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-47",
+          "text": "限りのある人生より、不老不死の人生を選びたい。",
+          "theme": "values",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "mortality"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-48",
+          "text": "他人の寿命が分かる力より、自分の寿命が分かる力を選びたい。",
+          "theme": "values",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "mortality"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-49",
+          "text": "生まれ変わるなら、今とは異なる性別を経験してみたい。",
+          "theme": "values",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "gender"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-50",
+          "text": "人の魅力では、筋肉より匂いに惹かれることが多い。",
+          "theme": "senses",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "intimacy"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-51",
+          "text": "推しの最後のライブより、親友の結婚式を優先したい。",
+          "theme": "relationships",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "marriage"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "values-52",
+          "text": "恋愛では、何度も強く惹かれる経験より、一人と長く関係を育てたい。",
+          "theme": "relationships",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "romance"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "values-53",
+          "text": "親しい相手には、自分だけを特別扱いすることより、誰にでも親切であることを望みたい。",
+          "theme": "relationships",
+          "sensitivityLevel": 1,
+          "sensitiveTopics": [
+            "romance",
+            "relationships"
+          ],
+          "requiresOptIn": false,
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "values-54",
+          "text": "まとまった臨時収入は、暮らしの水準を上げるより、貯蓄や資産形成に回したい。",
+          "theme": "money",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "values-55",
+          "text": "投資で大きな損失が出たら、取り戻そうと続けるより、その時点でやめたい。",
+          "theme": "money",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "values-56",
+          "text": "投資するなら、大きな利益を狙う高リスク型より、利益が小さくても低リスク型を選びたい。",
+          "theme": "money",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "values-57",
+          "text": "生まれ変わるなら、今と同じ人生より、まったく異なる人生を経験したい。",
+          "theme": "values",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "mortality"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "values-58",
+          "text": "一つの国で一年間ぜいたくに暮らすより、限られた予算で多くの国を一年間旅したい。",
+          "theme": "travel",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "values-59",
+          "text": "誰からも好かれる今の自分でいるより、人付き合いが難しくなっても一つの技能で世界一になりたい。",
+          "theme": "values",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "values-60",
+          "text": "百人の暮らしを少しずつ助けるより、一人の人生を大きく助けたい。",
+          "theme": "community",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "values-61",
+          "text": "心地よい嘘を信じるより、不快でも事実を知りたい。",
+          "theme": "values",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "values-62",
+          "text": "何でもかなう仮想世界より、制約のある現実世界で暮らしたい。",
+          "theme": "digital",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "values-63",
+          "text": "宇宙の謎をすべて知るより、自分の選択が生む結果をすべて知りたい。",
+          "theme": "values",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "values-64",
+          "text": "人々が今より賢い世界より、今より親切な世界で暮らしたい。",
+          "theme": "community",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        }
       ]
     },
     {
-      "id": "hobby",
-      "label": "趣味",
+      "id": "personality",
+      "label": "性格・自己認識",
+      "answerType": "yes-no",
+      "description": "状況を限定せず、自分の性格や行動傾向を表す自己記述文",
       "questions": [
-        { "id": "hobby-01", "text": "休日に映画やドラマを観ますか？" },
-        { "id": "hobby-02", "text": "読書は紙の本でしたいですか？" },
-        { "id": "hobby-03", "text": "スポーツを観るより自分でする方が好きですか？" },
-        { "id": "hobby-04", "text": "趣味の道具にはこだわりますか？" },
-        { "id": "hobby-05", "text": "好きな作品を繰り返し楽しみますか？" },
-        { "id": "hobby-06", "text": "収集しているものがありますか？" },
-        { "id": "hobby-07", "text": "創作活動をしたことがありますか？" },
-        { "id": "hobby-08", "text": "趣味を人に勧めることが多いですか？" },
-        { "id": "hobby-09", "text": "ゲームでは攻略情報を見ますか？" },
-        { "id": "hobby-10", "text": "音楽を聴きながら別の作業をしますか？" },
-        { "id": "hobby-11", "text": "新しい趣味を始めたいと思っていますか？" },
-        { "id": "hobby-12", "text": "趣味のためなら遠出できますか？" },
-        { "id": "hobby-13", "text": "作品の結末を先に知っても楽しめますか？" },
-        { "id": "hobby-14", "text": "一人で完結する趣味が好きですか？" },
-        { "id": "hobby-15", "text": "趣味の記録を残していますか？" },
-        { "id": "hobby-16", "text": "昔好きだった趣味を今も続けていますか？" }
+        {
+          "id": "personality-01",
+          "text": "初めての場所でも、あまり緊張しない方だ。",
+          "theme": "challenge"
+        },
+        {
+          "id": "personality-02",
+          "text": "決断するときは、理屈より直感を信じる方だ。",
+          "theme": "values"
+        },
+        {
+          "id": "personality-03",
+          "text": "周囲の小さな変化によく気づく方だ。",
+          "theme": "senses"
+        },
+        {
+          "id": "personality-04",
+          "text": "知らない人にも、自分から話しかける方だ。",
+          "theme": "relationships"
+        },
+        {
+          "id": "personality-05",
+          "text": "一度決めた予定でも、よい提案があれば変える方だ。",
+          "theme": "daily"
+        },
+        {
+          "id": "personality-06",
+          "text": "競争があると、普段以上に力を発揮する方だ。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "personality-07",
+          "text": "好きなことについて話し始めると、つい長くなる方だ。",
+          "theme": "hobby"
+        },
+        {
+          "id": "personality-08",
+          "text": "旅行前は、楽しみより心配が先に浮かぶ方だ。",
+          "theme": "travel"
+        },
+        {
+          "id": "personality-09",
+          "text": "食べたことのない料理を、積極的に試す方だ。",
+          "theme": "food"
+        },
+        {
+          "id": "personality-10",
+          "text": "物語の登場人物に、強く感情移入する方だ。",
+          "theme": "entertainment"
+        },
+        {
+          "id": "personality-11",
+          "text": "作業は早く終えるより、細部まで仕上げたい方だ。",
+          "theme": "work-study"
+        },
+        {
+          "id": "personality-12",
+          "text": "買い物では、比較を重ねるより早く決める方だ。",
+          "theme": "money"
+        },
+        {
+          "id": "personality-13",
+          "text": "新しいアプリや機能を、すぐ試す方だ。",
+          "theme": "digital"
+        },
+        {
+          "id": "personality-14",
+          "text": "子どもの頃から、負けず嫌いな方だ。",
+          "theme": "childhood"
+        },
+        {
+          "id": "personality-15",
+          "text": "将来について考えるときは、具体的な計画を立てる方だ。",
+          "theme": "future"
+        },
+        {
+          "id": "personality-16",
+          "text": "物事を楽観的に考える方だ。",
+          "theme": "values"
+        },
+        {
+          "id": "personality-18",
+          "text": "褒め言葉を、疑わず素直に受け取る方だ。",
+          "theme": "relationships"
+        },
+        {
+          "id": "personality-19",
+          "text": "自分の失敗を、後から笑い話にできる方だ。",
+          "theme": "challenge"
+        },
+        {
+          "id": "personality-20",
+          "text": "一つに集中するより、複数の作業を同時に進める方が合っている。",
+          "theme": "work-study"
+        },
+        {
+          "id": "personality-22",
+          "text": "人の名前より、顔を覚える方が得意だ。",
+          "theme": "relationships"
+        },
+        {
+          "id": "personality-23",
+          "text": "周囲が静かすぎると、かえって落ち着かない方だ。",
+          "theme": "senses"
+        },
+        {
+          "id": "personality-24",
+          "text": "頼まれていなくても、困っている人を手伝う方だ。",
+          "theme": "community"
+        },
+        {
+          "id": "personality-25",
+          "text": "新しい集まりでは、すぐ話すよりまず様子を見る方だ。",
+          "theme": "relationships"
+        },
+        {
+          "id": "personality-26",
+          "text": "気に入った物は、同じ種類を長く使い続ける方だ。",
+          "theme": "money"
+        },
+        {
+          "id": "personality-27",
+          "text": "説明書を読む前に、まず触って試す方だ。",
+          "theme": "digital"
+        },
+        {
+          "id": "personality-28",
+          "text": "応援している側が負けても、試合そのものを楽しめる方だ。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "personality-29",
+          "text": "予定が変わっても、すぐ気持ちを切り替えられる方だ。",
+          "theme": "daily"
+        },
+        {
+          "id": "personality-31",
+          "text": "年下の人より、年上の人と自然に打ち解けることが多い。",
+          "theme": "relationships",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "personality-32",
+          "text": "冗談のやり取りでは、話を広げるより鋭く反応する側になることが多い。",
+          "theme": "relationships",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "personality-33",
+          "text": "人前に立つ役割より、裏方として支える役割が合っている。",
+          "theme": "work-study",
+          "inspiration": "mynavi-240213-2"
+        }
       ]
     },
     {
-      "id": "daily",
-      "label": "日常",
+      "id": "daily-habits",
+      "label": "日常生活・習慣",
+      "answerType": "yes-no",
+      "description": "日々の行動を「〜することが多い」で表した自己記述文",
       "questions": [
-        { "id": "daily-01", "text": "目覚まし時計一回で起きられますか？" },
-        { "id": "daily-02", "text": "部屋はいつも片付いていますか？" },
-        { "id": "daily-03", "text": "買い物にはリストを持っていきますか？" },
-        { "id": "daily-04", "text": "休日も平日と同じ時間に起きますか？" },
-        { "id": "daily-05", "text": "毎日必ず確認するニュースがありますか？" },
-        { "id": "daily-06", "text": "傘を忘れることは少ないですか？" },
-        { "id": "daily-07", "text": "家を出る前に持ち物を再確認しますか？" },
-        { "id": "daily-08", "text": "予定のない休日が好きですか？" },
-        { "id": "daily-09", "text": "通知はこまめに消しますか？" },
-        { "id": "daily-10", "text": "現金を普段から持ち歩きますか？" },
-        { "id": "daily-11", "text": "季節ごとに衣替えをしますか？" },
-        { "id": "daily-12", "text": "寝る前に翌日の準備をしますか？" },
-        { "id": "daily-13", "text": "気に入った服を頻繁に着ますか？" },
-        { "id": "daily-14", "text": "家事はまとめて済ませる方ですか？" },
-        { "id": "daily-15", "text": "待ち時間を有効に使える方ですか？" },
-        { "id": "daily-16", "text": "予定より早く着いたら周辺を散歩しますか？" }
+        {
+          "id": "daily-habits-01",
+          "text": "二度寝することは少ない。",
+          "theme": "daily"
+        },
+        {
+          "id": "daily-habits-31",
+          "text": "目覚まし時計にセットした時間より先に目が覚めることが多い。",
+          "theme": "daily"
+        },
+        {
+          "id": "daily-habits-02",
+          "text": "朝食はきちんと食べる方だ。",
+          "theme": "food"
+        },
+        {
+          "id": "daily-habits-03",
+          "text": "外出の持ち物は前日に準備することが多い。",
+          "theme": "travel"
+        },
+        {
+          "id": "daily-habits-04",
+          "text": "寝る前に本や漫画を読むことが多い。",
+          "theme": "entertainment"
+        },
+        {
+          "id": "daily-habits-05",
+          "text": "毎週、趣味のための時間を確保することが多い。",
+          "theme": "hobby"
+        },
+        {
+          "id": "daily-habits-06",
+          "text": "部屋や机は、散らかる前に片付けることが多い。",
+          "theme": "daily"
+        },
+        {
+          "id": "daily-habits-07",
+          "text": "特別な用事がなくても、友人や家族へ連絡することが多い。",
+          "theme": "relationships"
+        },
+        {
+          "id": "daily-habits-10",
+          "text": "スマートフォンの通知は、見たらすぐ消す派だ。",
+          "theme": "digital"
+        },
+        {
+          "id": "daily-habits-11",
+          "text": "エレベーターやエスカレーターより階段を使うことが多い。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "daily-habits-12",
+          "text": "休日も平日と近い時刻に起きることが多い。",
+          "theme": "daily"
+        },
+        {
+          "id": "daily-habits-13",
+          "text": "一年の初めに、その年の目標を決めることが多い。",
+          "theme": "future"
+        },
+        {
+          "id": "daily-habits-14",
+          "text": "一日の終わりに、良かったことや反省点を振り返ることが多い。",
+          "theme": "values"
+        },
+        {
+          "id": "daily-habits-15",
+          "text": "服を選ぶときは、見た目より着心地を優先することが多い。",
+          "theme": "senses"
+        },
+        {
+          "id": "daily-habits-16",
+          "text": "慣れた方法より、新しい方法を試すことが多い。",
+          "theme": "challenge"
+        },
+        {
+          "id": "daily-habits-17",
+          "text": "ごみを捨てる前に、分別表示を確認することが多い。",
+          "theme": "community"
+        },
+        {
+          "id": "daily-habits-18",
+          "text": "外出するときは、水やお茶を持ち歩くことが多い。",
+          "theme": "food"
+        },
+        {
+          "id": "daily-habits-19",
+          "text": "外出したときに写真をよく撮る方だ。",
+          "theme": "travel"
+        },
+        {
+          "id": "daily-habits-20",
+          "text": "家事や作業をするときは、音楽を流すことが多い。",
+          "theme": "entertainment"
+        },
+        {
+          "id": "daily-habits-21",
+          "text": "使った物はすぐ元の場所へ戻す。",
+          "theme": "daily"
+        },
+        {
+          "id": "daily-habits-22",
+          "text": "受け取ったメッセージには、その日のうちに返信することが多い。",
+          "theme": "relationships"
+        },
+        {
+          "id": "daily-habits-24",
+          "text": "家計簿をつけており、よく見直す。",
+          "theme": "money"
+        },
+        {
+          "id": "daily-habits-26",
+          "text": "週に一度以上運動している。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "daily-habits-27",
+          "text": "外出前に天気予報を確認する。",
+          "theme": "daily"
+        },
+        {
+          "id": "daily-habits-28",
+          "text": "家事は溜めてしまう方だ。",
+          "theme": "daily"
+        },
+        {
+          "id": "daily-habits-29",
+          "text": "待ち合わせでは、予定時刻より早く着くことが多い。",
+          "theme": "daily"
+        },
+        {
+          "id": "daily-habits-30",
+          "text": "使っていない物を捨てることに抵抗がない。",
+          "theme": "community"
+        }
       ]
     },
     {
-      "id": "relations",
-      "label": "人間関係",
+      "id": "communication",
+      "label": "コミュニケーション・人間関係",
+      "answerType": "yes-no",
+      "description": "人との接し方や距離感に関する、本人の基本的な傾向を表す自己記述文",
       "questions": [
-        { "id": "relations-01", "text": "初対面の人に自分から話しかけられますか？" },
-        { "id": "relations-02", "text": "友人の誕生日を覚えていますか？" },
-        { "id": "relations-03", "text": "相談されることが多いですか？" },
-        { "id": "relations-04", "text": "誘いを断ることが得意ですか？" },
-        { "id": "relations-05", "text": "連絡への返信は早い方ですか？" },
-        { "id": "relations-06", "text": "褒められたとき素直に受け取れますか？" },
-        { "id": "relations-07", "text": "意見が違っても関係を保てますか？" },
-        { "id": "relations-08", "text": "久しぶりの友人へ自分から連絡しますか？" },
-        { "id": "relations-09", "text": "大人数の集まりが好きですか？" },
-        { "id": "relations-10", "text": "人の名前と顔を覚えるのは得意ですか？" },
-        { "id": "relations-11", "text": "贈り物を選ぶことが好きですか？" },
-        { "id": "relations-12", "text": "相手の話を最後まで聞く方ですか？" },
-        { "id": "relations-13", "text": "自分の失敗を人に話せますか？" },
-        { "id": "relations-14", "text": "友人と旅行しても一人の時間が必要ですか？" },
-        { "id": "relations-15", "text": "頼まれる前に手伝うことが多いですか？" },
-        { "id": "relations-16", "text": "仲直りするとき自分から謝れますか？" }
+        {
+          "id": "communication-01",
+          "text": "大人数で話すより、一対一でじっくり話したい。",
+          "theme": "relationships"
+        },
+        {
+          "id": "communication-02",
+          "text": "自分が話すより、人の話を聞く側でいたい。",
+          "theme": "relationships"
+        },
+        {
+          "id": "communication-03",
+          "text": "遠回しに伝えるより、率直な言葉で伝えたい。",
+          "theme": "values"
+        },
+        {
+          "id": "communication-04",
+          "text": "考えながら話すことは苦手だ。",
+          "theme": "relationships"
+        },
+        {
+          "id": "communication-05",
+          "text": "会話中の沈黙が気になって自分から新しい話題を始めることが多い。",
+          "theme": "relationships"
+        },
+        {
+          "id": "communication-06",
+          "text": "連絡には、電話よりテキストメッセージを使いたい。",
+          "theme": "digital"
+        },
+        {
+          "id": "communication-07",
+          "text": "たまに長く話すより、短くても頻繁に連絡を取りたい。",
+          "theme": "relationships"
+        },
+        {
+          "id": "communication-08",
+          "text": "広く浅い人間関係より、狭く深い人間関係を築きたい。",
+          "theme": "relationships"
+        },
+        {
+          "id": "communication-10",
+          "text": "人を褒めることが多い。",
+          "theme": "relationships"
+        },
+        {
+          "id": "communication-11",
+          "text": "困り事は一人で抱えるより、早めに人へ相談したい。",
+          "theme": "challenge"
+        },
+        {
+          "id": "communication-12",
+          "text": "不満があるとき、態度に出さず言葉で伝えることができる。",
+          "theme": "relationships"
+        },
+        {
+          "id": "communication-13",
+          "text": "意見の対立は、すぐ話し合うより時間を置いてから解決したい。",
+          "theme": "values"
+        },
+        {
+          "id": "communication-14",
+          "text": "相談を受けると、共感するより解決策を考えることが多い。",
+          "theme": "relationships"
+        },
+        {
+          "id": "communication-15",
+          "text": "人と話すとき、人の話題に乗るより自分で話題提供することが多い。",
+          "theme": "relationships"
+        },
+        {
+          "id": "communication-16",
+          "text": "人に誘われるより誘うことのほうが多い。",
+          "theme": "relationships"
+        },
+        {
+          "id": "communication-18",
+          "text": "ケンカをしたとき、自分から謝ることのほうが多い。",
+          "theme": "relationships"
+        },
+        {
+          "id": "communication-20",
+          "text": "自分の情報を開示することは苦手だ。",
+          "theme": "relationships"
+        },
+        {
+          "id": "communication-21",
+          "text": "友人との食事では、会話を重視して何を食べたか覚えていないことがある。",
+          "theme": "food"
+        },
+        {
+          "id": "communication-22",
+          "text": "重要な話は、オンラインより対面で伝えたい。",
+          "theme": "digital"
+        },
+        {
+          "id": "communication-25",
+          "text": "グループでは、進行役より自由に発言する立場でいたい。",
+          "theme": "work-study"
+        },
+        {
+          "id": "communication-26",
+          "text": "自分の成功談より、失敗談を話す方が気楽だ。",
+          "theme": "challenge"
+        },
+        {
+          "id": "communication-27",
+          "text": "自分の意見を伝えるより先に、人の話を最後まで聞きたい。",
+          "theme": "relationships"
+        },
+        {
+          "id": "communication-28",
+          "text": "しばらく連絡を取っていない友人に、特別な用事がなくても自分から連絡できる。",
+          "theme": "relationships"
+        },
+        {
+          "id": "communication-29",
+          "text": "人と話すとき、相手の表情や声のトーンを気にすることが多い。",
+          "theme": "relationships"
+        },
+        {
+          "id": "communication-30",
+          "text": "困ったことがあったとき、人に頼るより自分で解決することの方が多い。",
+          "theme": "challenge"
+        },
+        {
+          "id": "communication-31",
+          "text": "恋人には、自分のSNSアカウントを共有したい。",
+          "theme": "digital",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "romance",
+            "privacy"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "communication-32",
+          "text": "親しい人とけんかをしたら、納得するまで待つより、自分から謝って早く仲直りしたい。",
+          "theme": "relationships",
+          "sensitivityLevel": 1,
+          "sensitiveTopics": [
+            "relationships"
+          ],
+          "requiresOptIn": false,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "communication-33",
+          "text": "LINEでは、絵文字よりスタンプを使うことが多い。",
+          "theme": "digital",
+          "namedEntities": [
+            "LINE"
+          ],
+          "timeSensitive": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "communication-34",
+          "text": "好意を伝える場面では、相手の言葉を待つより、自分から先に気持ちを伝えたい。",
+          "theme": "relationships",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "romance"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "communication-35",
+          "text": "人に話しにくい秘密でも、親密な相手には隠し通すより共有したい。",
+          "theme": "relationships",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "privacy",
+            "relationships"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "sukidayo-ultimate-questions"
+        }
       ]
     },
     {
-      "id": "challenge",
-      "label": "挑戦",
+      "id": "work-learning",
+      "label": "仕事・学び方",
+      "answerType": "yes-no",
+      "description": "作業、協働、学習で本人が取りやすい方法を表す自己記述文",
       "questions": [
-        { "id": "challenge-01", "text": "未経験のことに挑戦するのは好きですか？" },
-        { "id": "challenge-02", "text": "高い場所は平気ですか？" },
-        { "id": "challenge-03", "text": "失敗してもすぐ再挑戦できますか？" },
-        { "id": "challenge-04", "text": "準備が不十分でもまず始められますか？" },
-        { "id": "challenge-05", "text": "人から無理だと言われると燃えますか？" },
-        { "id": "challenge-06", "text": "難しい目標を自分で設定しますか？" },
-        { "id": "challenge-07", "text": "知らない人ばかりの場へ一人で参加できますか？" },
-        { "id": "challenge-08", "text": "予定を変えて新しい機会を選べますか？" },
-        { "id": "challenge-09", "text": "苦手なことも必要なら引き受けますか？" },
-        { "id": "challenge-10", "text": "勝算が低くても面白ければ挑戦しますか？" },
-        { "id": "challenge-11", "text": "目標を周囲に宣言しますか？" },
-        { "id": "challenge-12", "text": "緊張する場面でも楽しめる方ですか？" },
-        { "id": "challenge-13", "text": "長期的な努力を続けるのは得意ですか？" },
-        { "id": "challenge-14", "text": "途中で方針を変えることに抵抗はありませんか？" },
-        { "id": "challenge-15", "text": "成功より成長を目的に挑戦できますか？" },
-        { "id": "challenge-16", "text": "誰もやっていない方法を試したいですか？" }
+        {
+          "id": "work-learning-01",
+          "text": "正式な締切より前に、自分用の締切を設定する方だ。",
+          "theme": "work-study"
+        },
+        {
+          "id": "work-learning-02",
+          "text": "新しいことは、説明を読むより実際に試して覚える方だ。",
+          "theme": "work-study"
+        },
+        {
+          "id": "work-learning-03",
+          "text": "分からないことは、考え続けるより早い段階で人に質問する方だ。",
+          "theme": "relationships"
+        },
+        {
+          "id": "work-learning-04",
+          "text": "一人で進めるより、誰かと相談しながら進めたい。",
+          "theme": "relationships"
+        },
+        {
+          "id": "work-learning-05",
+          "text": "勉強や作業を始める前に、全体の手順を考える方だ。",
+          "theme": "work-study"
+        },
+        {
+          "id": "work-learning-06",
+          "text": "複数の課題があるときは、難しいものより簡単なものから始める方だ。",
+          "theme": "work-study"
+        },
+        {
+          "id": "work-learning-07",
+          "text": "一人で読み返すより、人に説明して理解を深めたい。",
+          "theme": "work-study"
+        },
+        {
+          "id": "work-learning-08",
+          "text": "音のある場所より、静かな場所で作業したい。",
+          "theme": "senses"
+        },
+        {
+          "id": "work-learning-09",
+          "text": "仕事や勉強のメモを、後から読み返す方だ。",
+          "theme": "work-study"
+        },
+        {
+          "id": "work-learning-10",
+          "text": "失敗したときは、理由と次に変えることを記録する方だ。",
+          "theme": "challenge"
+        },
+        {
+          "id": "work-learning-11",
+          "text": "完成してから見せるより、途中経過を人に見せたい。",
+          "theme": "challenge"
+        },
+        {
+          "id": "work-learning-12",
+          "text": "役割が柔軟なチームより、役割が明確なチームで働きたい。",
+          "theme": "relationships"
+        },
+        {
+          "id": "work-learning-13",
+          "text": "作業を細かく切り替えるより、一つの作業へ長く集中したい。",
+          "theme": "work-study"
+        },
+        {
+          "id": "work-learning-14",
+          "text": "慣れた道具を使い続けるより、新しいデジタルツールを取り入れたい。",
+          "theme": "digital"
+        },
+        {
+          "id": "work-learning-15",
+          "text": "紙の資料より、検索できるデジタル資料を使いたい。",
+          "theme": "digital"
+        },
+        {
+          "id": "work-learning-16",
+          "text": "大きな目標は、小さな作業に分けてから始める方だ。",
+          "theme": "work-study"
+        },
+        {
+          "id": "work-learning-17",
+          "text": "苦手を補うより、得意分野を伸ばすことに時間を使いたい。",
+          "theme": "values"
+        },
+        {
+          "id": "work-learning-18",
+          "text": "人前で発表する前は、頭の中だけで確認せず声に出して練習する方だ。",
+          "theme": "work-study"
+        },
+        {
+          "id": "work-learning-19",
+          "text": "作業時間を決めるより、終わらせる内容を決めて取り組む方だ。",
+          "theme": "daily"
+        },
+        {
+          "id": "work-learning-20",
+          "text": "忙しいときでも、集中を続けるより休憩を取りたい。",
+          "theme": "sports-health"
+        },
+        {
+          "id": "work-learning-21",
+          "text": "予定外の依頼が入ったら、元の計画に固執せず優先順位を組み直す方だ。",
+          "theme": "challenge"
+        },
+        {
+          "id": "work-learning-22",
+          "text": "自分の成果や貢献は、控えるより必要な場で言葉にしたい。",
+          "theme": "relationships"
+        },
+        {
+          "id": "work-learning-23",
+          "text": "学んだことは、知識として覚えるだけでなく実際に試したい。",
+          "theme": "daily"
+        },
+        {
+          "id": "work-learning-24",
+          "text": "費用がかかっても、学びたいことにはお金を使いたい。",
+          "theme": "money"
+        },
+        {
+          "id": "work-learning-25",
+          "text": "興味を持ったテーマは、必要な範囲を超えて深く調べる方だ。",
+          "theme": "hobby"
+        },
+        {
+          "id": "work-learning-26",
+          "text": "仕事や勉強では、速さより正確さを優先したい。",
+          "theme": "values"
+        },
+        {
+          "id": "work-learning-27",
+          "text": "自分の方法を貫くより、他人のよい進め方を取り入れたい。",
+          "theme": "relationships"
+        },
+        {
+          "id": "work-learning-28",
+          "text": "長期の目標は、一週間単位の計画へ落とし込む方だ。",
+          "theme": "future"
+        },
+        {
+          "id": "work-learning-29",
+          "text": "集中が切れたら、粘って続けるより場所や作業を変える方だ。",
+          "theme": "senses"
+        },
+        {
+          "id": "work-learning-30",
+          "text": "学び終えたあとは、自分の言葉で要点をまとめる方だ。",
+          "theme": "work-study"
+        },
+        {
+          "id": "work-learning-31",
+          "text": "上司には、話しやすさより仕事から学べる能力の高さを求めたい。",
+          "theme": "work-study",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "work-learning-32",
+          "text": "職場の交流会は、定期的にあるより、ほとんどない方が働きやすい。",
+          "theme": "relationships",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "work-learning-33",
+          "text": "一緒に働く人には、今の技能の高さより協力しやすい姿勢を求めたい。",
+          "theme": "relationships",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "work-learning-34",
+          "text": "平日に休める働き方より、土日や祝日に休める働き方を選びたい。",
+          "theme": "work-study",
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "work-learning-35",
+          "text": "自分と異なる性別の人だけの職場より、自分と同じ性別の人だけの職場を選びたい。",
+          "theme": "work-study",
+          "sensitivityLevel": 2,
+          "sensitiveTopics": [
+            "gender"
+          ],
+          "requiresOptIn": true,
+          "inspiration": "mynavi-240213-2"
+        },
+        {
+          "id": "work-learning-36",
+          "text": "働く組織を選ぶなら、大企業より新興企業で働きたい。",
+          "theme": "work-study",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "work-learning-37",
+          "text": "評価制度を選べるなら、勤続年数より成果を重視してほしい。",
+          "theme": "work-study",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "work-learning-38",
+          "text": "仕事では、実行を担当するより企画を担当したい。",
+          "theme": "work-study",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "work-learning-39",
+          "text": "同じ勤務時間なら、午後から夜に働くより、早朝から午後まで働きたい。",
+          "theme": "work-study",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "work-learning-40",
+          "text": "同僚は、全員無口であるより、全員おしゃべり好きな方が働きやすい。",
+          "theme": "relationships",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "work-learning-41",
+          "text": "働く場所を選べるなら、都心の高層ビルより、自然の多い郊外を選びたい。",
+          "theme": "work-study",
+          "inspiration": "sukidayo-ultimate-questions"
+        },
+        {
+          "id": "work-learning-42",
+          "text": "負担が軽い雇用の仕事より、大変でも自分で事業を営みたい。",
+          "theme": "work-study",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "work-learning-43",
+          "text": "仕事を気にかけない上司の下で楽に働くより、高い期待を持って支えてくれる上司の下で努力したい。",
+          "theme": "relationships",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "work-learning-44",
+          "text": "文章を速く入力する力より、文章を速く読む力を伸ばしたい。",
+          "theme": "work-study",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        },
+        {
+          "id": "work-learning-45",
+          "text": "やりがいのない仕事を楽に続けるより、負担が大きくてもやりがいのある仕事をしたい。",
+          "theme": "work-study",
+          "inspiration": "conversationstartersworld-ja-wyr"
+        }
       ]
     }
   ]
