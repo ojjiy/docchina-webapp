@@ -17,9 +17,10 @@ service cloud.firestore {
     }
 
     function isValidJoin() {
+      // players includes kicked participants retained for score history.
+      // The UI limits active seats to 8, as with other gameplay constraints.
       let oldPlayerCount = resource.data.players.size();
       return signedIn()
-        && oldPlayerCount < 8
         && request.resource.data.diff(resource.data).affectedKeys()
           .hasOnly(['players', 'memberUids', 'updatedAt', 'expiresAt'])
         && request.resource.data.memberUids == resource.data.memberUids.concat([request.auth.uid])

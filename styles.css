@@ -575,3 +575,6 @@ button.tree-leaf:hover { border-color: var(--gold-300); background: var(--navy-7
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }
+
+.player-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.player-actions .button { min-height: 32px; padding: 4px 10px; }

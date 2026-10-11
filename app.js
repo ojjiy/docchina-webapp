@@ -1,4 +1,7 @@
 import {
+  activePlayers,
+  kickPlayer,
+  nextRepresentativeIndex,
   LEAF_COUNT,
   MAX_PLAYERS,
   MIN_PLAYERS,
@@ -166,6 +169,13 @@ class RoomStore {
     this.storageHandler = null;
   }
 
+  applyMutation(current, mutator) {
+    const actor = current.players.find((player) => player.id === state.playerId);
+    const kickedUid = this.userId() && current.players.some((player) => player.uid === this.userId() && player.kickedAt);
+    if (actor?.kickedAt || kickedUid) throw new Error("このルームからkickされています。");
+    return mutator(structuredClone(current));
+  }
+
   async update(mutator) {
     if (!this.roomId) throw new Error("ルームが選択されていません。");
     if (this.mode === "firebase") {
@@ -174,7 +184,7 @@ class RoomStore {
         const snapshot = await transaction.get(ref);
         if (!snapshot.exists()) throw new Error("ルームが見つかりません。");
         const current = normalizeRoom(snapshot.data());
-        const next = mutator(structuredClone(current));
+        const next = this.applyMutation(current, mutator);
         if (!next) return;
         next.updatedAt = nowIso();
         next.expiresAt = expirationIso();
@@ -184,7 +194,7 @@ class RoomStore {
     }
     const current = readLocalRoom(this.roomId);
     if (!current) throw new Error("ルームが見つかりません。");
-    const next = mutator(structuredClone(current));
+    const next = this.applyMutation(current, mutator);
     if (!next) return;
     next.updatedAt = nowIso();
     next.expiresAt = expirationIso();
@@ -218,6 +228,10 @@ async function boot() {
       if (state.draftRoundKey !== draftRoundKey) {
         resetRoundDrafts();
         state.draftRoundKey = draftRoundKey;
+      }
+      if (!currentPlayer() && state.presenceTimer) {
+        clearInterval(state.presenceTimer);
+        state.presenceTimer = null;
       }
       render();
       maintainPresence();
@@ -253,6 +267,8 @@ function renderContent() {
   if (state.missingRoom && !state.room) return renderMissingRoom();
   if (!state.room) return loadingPanel("ルームを読み込んでいます");
   if (state.room.rulesVersion !== GAME_RULES_VERSION) return renderIncompatibleRoom();
+  const kicked = state.room.players.some((player) => player.kickedAt && (player.id === state.playerId || (state.store.userId() && player.uid === state.store.userId())));
+  if (kicked) return messagePanel("ルームから退出しました", "他の参加者によりkickされました。", "empty", h("a", { class: "button primary", href: baseUrl() }, "ホームへ戻る"));
   if (!currentPlayer()) return renderNameRegistration();
   return renderRoom();
 }
@@ -366,7 +382,7 @@ function renderPlayers() {
   const room = state.room;
   const activeIds = new Set(room.gamePlayerIds || []);
   return h("ol", { class: "player-list" },
-    ...room.players.map((player) => {
+    ...activePlayers(room).map((player) => {
       const isRepresentative = room.currentRound?.representativeId === player.id && room.phase !== "gameOver";
       return h("li", { class: `player ${player.id === state.playerId ? "self" : ""} ${isRepresentative ? "representative" : ""}` },
         renderPlayerMark(player.id, { decorative: true }),
@@ -374,7 +390,10 @@ function renderPlayers() {
           h("strong", {}, player.name, player.id === room.hostPlayerId ? h("small", {}, " HOST") : null),
           h("small", {}, activeIds.size && !activeIds.has(player.id) ? "次ラウンドから参加" : isRepresentative ? "代表者" : "参加者")
         ),
-        h("span", { class: "score" }, h("b", {}, String(player.score || 0)), " pt")
+        h("div", { class: "player-actions" },
+          h("span", { class: "score" }, h("b", {}, String(player.score || 0)), " pt"),
+          player.id !== state.playerId ? button("kick", () => removePlayer(player.id), "ghost compact", { disabled: state.loading, "aria-label": `${player.name}さんをkick` }) : null
+        )
       );
     })
   );
@@ -391,7 +410,7 @@ function renderRoomActions() {
 }
 
 function renderLobby() {
-  const count = state.room.players.length;
+  const count = activePlayers(state.room).length;
   return h("div", { class: "stage-panel lobby-panel" },
     stageHeader("THE DRAWING ROOM", "参加者をお待ちしています", "全員が着席したら、参加順に代表者を務めます。"),
     h("div", { class: "lobby-code" }, h("small", {}, "ROOM CODE"), h("strong", {}, state.room.id), button("コピー", copyInvite, "ghost compact")),
@@ -582,7 +601,7 @@ function renderRoundScoreCard(playerId, breakdown) {
 function renderGameOver() {
   const players = state.room.gamePlayerIds.map((id) => state.room.players.find((player) => player.id === id)).filter(Boolean);
   return h("div", { class: "stage-panel final-panel" },
-    stageHeader("FINAL RESULT", "今宵の結果", "すべての代表者が回答を終えました。"),
+    stageHeader("FINAL RESULT", "今宵の結果", activePlayers(state.room).length < MIN_PLAYERS ? "参加者が2名未満になったため、ゲームを終了しました。" : "すべての代表者が回答を終えました。"),
     renderRanking(players),
     renderScoreMatrix(players, state.room.logs),
     h("section", { class: "answer-history" },
@@ -844,7 +863,7 @@ async function registerName(event) {
   const uid = state.store.userId();
   await runAction(async () => {
     await state.store.update((room) => {
-      if (room.players.length >= MAX_PLAYERS) throw new Error("このルームは8名で満席です。");
+      if (activePlayers(room).length >= MAX_PLAYERS) throw new Error("このルームは8名で満席です。");
       room.players.push({ id: playerId, uid: uid || "", name, score: 0, joinedAt: nowIso(), lastSeenAt: nowIso() });
       if (uid && !room.memberUids.includes(uid)) room.memberUids.push(uid);
       const ownsOnlineRoom = uid && room.ownerUid === uid;
@@ -862,10 +881,10 @@ async function startGame() {
   await runAction(async () => {
     await state.store.update((room) => {
       requireHost(room);
-      if (room.players.length < MIN_PLAYERS || room.players.length > MAX_PLAYERS) throw new Error("参加人数は2〜8名です。");
+      if (activePlayers(room).length < MIN_PLAYERS || activePlayers(room).length > MAX_PLAYERS) throw new Error("参加人数は2〜8名です。");
       room.players = room.players.map((player) => ({ ...player, score: 0 }));
       room.scoringConfig = snapshotScoreConfig(SCORE_CONFIG);
-      room.gamePlayerIds = room.players.map((player) => player.id);
+      room.gamePlayerIds = activePlayers(room).map((player) => player.id);
       room.representativeIndex = 0;
       room.genreSchedule = createGenreSchedule(state.questionBank.genres.map((genre) => genre.id), MAX_PLAYERS);
       room.usedQuestionIds = [];
@@ -882,7 +901,7 @@ function createRound(room, representativeIndex) {
   return {
     roundNumber: representativeIndex + 1,
     representativeId: room.gamePlayerIds[representativeIndex],
-    eligiblePredictorIds: room.gamePlayerIds.filter((id) => id !== room.gamePlayerIds[representativeIndex]),
+    eligiblePredictorIds: room.gamePlayerIds.filter((id) => id !== room.gamePlayerIds[representativeIndex] && activePlayers(room).some((player) => player.id === id)),
     genreByDepth,
     nodes: sampleRoundNodes(state.questionBank, genreByDepth, room.usedQuestionIds),
     predictions: {},
@@ -1049,6 +1068,22 @@ async function answerQuestion(answer) {
   });
 }
 
+async function removePlayer(targetId) {
+  const name = playerName(targetId);
+  if (!confirm(name + "さんをkickしますか？代表者の場合は現在のラウンドを無得点で終了します。")) return;
+  await runAction(async () => {
+    await state.store.update((room) => {
+      const previousPhase = room.phase;
+      kickPlayer(room, state.playerId, targetId, nowIso());
+      if (room.phase === "gameOver" && previousPhase !== "gameOver" && room.currentRound) {
+        room.logs.push(roundLog(room));
+        room.currentRound = null;
+      }
+      return room;
+    });
+  });
+}
+
 async function cancelRound() {
   if (!confirm("このラウンドを無効終了します。得点は加算されません。")) return;
   await runAction(async () => {
@@ -1070,8 +1105,8 @@ async function nextRound() {
       requireHost(room);
       requirePhase(room, "reveal");
       room.logs.push(roundLog(room));
-      room.gamePlayerIds = appendQueuedPlayerIds(room.gamePlayerIds, room.players.map((player) => player.id));
-      room.representativeIndex += 1;
+      room.gamePlayerIds = appendQueuedPlayerIds(room.gamePlayerIds, activePlayers(room).map((player) => player.id));
+      room.representativeIndex = nextRepresentativeIndex(room);
       if (room.representativeIndex >= room.gamePlayerIds.length) {
         room.currentRound = null;
         room.phase = "gameOver";
@@ -1261,7 +1296,7 @@ function toFirestoreRoom(room, firestore) {
 }
 
 function currentPlayer() {
-  return state.room?.players.find((player) => player.id === state.playerId) || null;
+  return state.room?.players.find((player) => player.id === state.playerId && !player.kickedAt) || null;
 }
 
 function hostPlayer() {
@@ -1313,8 +1348,8 @@ function renderPathPredictionVotes(round, node) {
 }
 
 function isFinalRound(room) {
-  const queuedPlayerExists = room.players.some((player) => !room.gamePlayerIds.includes(player.id));
-  return !queuedPlayerExists && room.representativeIndex >= room.gamePlayerIds.length - 1;
+  const queuedPlayerExists = activePlayers(room).some((player) => !room.gamePlayerIds.includes(player.id));
+  return !queuedPlayerExists && nextRepresentativeIndex(room) >= room.gamePlayerIds.length;
 }
 
 function predictorNamesAtLeaf(round, leaf) {

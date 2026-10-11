@@ -265,3 +265,42 @@ export function appendQueuedPlayerIds(gamePlayerIds, playerIds, maximum = MAX_PL
   }
   return result;
 }
+
+export function activePlayers(room) {
+  return room.players.filter((player) => !player.kickedAt);
+}
+
+export function nextRepresentativeIndex(room) {
+  const activeIds = new Set(activePlayers(room).map((player) => player.id));
+  let index = room.representativeIndex + 1;
+  while (index < room.gamePlayerIds.length && !activeIds.has(room.gamePlayerIds[index])) index += 1;
+  return index;
+}
+
+export function kickPlayer(room, actorId, targetId, kickedAt) {
+  const players = activePlayers(room);
+  const target = players.find((player) => player.id === targetId);
+  if (!players.some((player) => player.id === actorId)) throw new Error("参加者のみ実行できます。");
+  if (actorId === targetId) throw new Error("自分自身はkickできません。");
+  if (!target) throw new Error("対象の参加者はすでに退出しています。");
+  target.kickedAt = kickedAt;
+  if (room.hostPlayerId === targetId) room.hostPlayerId = actorId;
+  const round = room.currentRound;
+  const inProgress = ['treeSetup', 'predicting', 'answering'].includes(room.phase);
+  if (round && inProgress) {
+    round.eligiblePredictorIds = round.eligiblePredictorIds.filter((id) => id !== targetId);
+    delete round.predictions[targetId];
+    if (round.representativePrediction) delete round.representativePrediction.correctCountsByPlayerId[targetId];
+    if (round.representativeId === targetId || activePlayers(room).length < MIN_PLAYERS) {
+      round.cancelled = true;
+      round.allCorrectIds = [];
+      round.scoreBreakdowns = {};
+      room.phase = 'reveal';
+    } else if (room.phase === 'predicting' && round.representativePrediction
+      && round.eligiblePredictorIds.every((id) => round.predictions[id])) {
+      room.phase = 'answering';
+    }
+  }
+  if (activePlayers(room).length < MIN_PLAYERS && room.phase !== 'lobby') room.phase = 'gameOver';
+  return room;
+}
